@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEEP-CODEBASE // NEURAL INTERFACE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-magenta: #ff00ff;
+            --neon-pink: #ff0080;
+            --neon-blue: #0080ff;
+            --neon-purple: #8000ff;
+            --dark-bg: #0a0a0f;
+            --dark-panel: #1a1a2e;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--dark-bg);
+            color: var(--neon-cyan);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--neon-cyan) 1px, transparent 1px),
+                linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.05;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        /* Scanlines Effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 255, 0.03),
+                rgba(0, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 46, 0.9);
+            border-bottom: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0, 255, 255, 0.3);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+            animation: glitchLogo 5s infinite;
+        }
+
+        @keyframes glitchLogo {
+            0%, 90%, 100% { transform: translate(0); }
+            91% { transform: translate(-2px, 2px); }
+            92% { transform: translate(2px, -2px); }
+            93% { transform: translate(-2px, 2px); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-links a::before {
+            content: '//';
+            margin-right: 0.5rem;
+            color: var(--neon-magenta);
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-magenta);
+            text-shadow: 0 0 10px var(--neon-magenta), 0 0 20px var(--neon-magenta);
+            transform: translateX(5px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            max-width: 1200px;
+        }
+
+        .glitch-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text .main-text {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            animation: chromatic 2s ease-in-out infinite;
+        }
+
+        @keyframes chromatic {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: 'DEEP-CODEBASE';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            color: var(--neon-cyan);
+            animation: glitch1 2.5s infinite;
+            text-shadow: 2px 0 var(--neon-cyan);
+        }
+
+        .glitch-text::after {
+            color: var(--neon-magenta);
+            animation: glitch2 2.5s infinite;
+            text-shadow: -2px 0 var(--neon-magenta);
+        }
+
+        @keyframes glitch1 {
+            0%, 80%, 100% { transform: translate(0); opacity: 0; }
+            81% { transform: translate(-3px, -3px); opacity: 0.8; }
+            82% { transform: translate(3px, 3px); opacity: 0; }
+        }
+
+        @keyframes glitch2 {
+            0%, 80%, 100% { transform: translate(0); opacity: 0; }
+            81% { transform: translate(3px, 3px); opacity: 0.8; }
+            82% { transform: translate(-3px, -3px); opacity: 0; }
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+            margin-bottom: 2rem;
+            letter-spacing: 3px;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            41%, 43% { opacity: 0.8; }
+            42% { opacity: 0.6; }
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            color: rgba(0, 255, 255, 0.8);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* CTA Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            color: var(--dark-bg);
+            background: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--neon-cyan);
+            box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px rgba(0, 255, 255, 0.7);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            color: var(--neon-magenta);
+            background: transparent;
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 20px var(--neon-magenta), 0 0 40px rgba(255, 0, 255, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neon-magenta);
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--neon-magenta), 0 0 60px rgba(255, 0, 255, 0.7);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--dark-bg) 0%, var(--dark-panel) 50%, var(--dark-bg) 100%);
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '<';
+            position: absolute;
+            left: -50px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .section-title::after {
+            content: '/>';
+            position: absolute;
+            right: -50px;
+            color: var(--neon-magenta);
+            text-shadow: 0 0 10px var(--neon-magenta);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 46, 0.6);
+            border: 2px solid var(--neon-cyan);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 30px var(--neon-magenta), inset 0 0 20px rgba(255, 0, 255, 0.1);
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .feature-card:nth-child(1) .feature-icon { color: var(--neon-cyan); }
+        .feature-card:nth-child(2) .feature-icon { color: var(--neon-magenta); }
+        .feature-card:nth-child(3) .feature-icon { color: var(--neon-pink); }
+        .feature-card:nth-child(4) .feature-icon { color: var(--neon-purple); }
+        .feature-card:nth-child(5) .feature-icon { color: var(--neon-blue); }
+        .feature-card:nth-child(6) .feature-icon { color: var(--neon-cyan); }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-description {
+            color: rgba(0, 255, 255, 0.7);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        /* Terminal Demo Section */
+        .terminal-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .terminal-window {
+            background: rgba(10, 10, 15, 0.95);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 40px var(--neon-cyan), inset 0 0 40px rgba(0, 255, 255, 0.1);
+        }
+
+        .terminal-header {
+            background: var(--dark-panel);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-red { background: #ff0055; box-shadow: 0 0 10px #ff0055; }
+        .btn-yellow { background: #ffff00; box-shadow: 0 0 10px #ffff00; }
+        .btn-green { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+
+        .terminal-title {
+            margin-left: 1rem;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .terminal-body {
+            padding: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt { color: var(--neon-pink); }
+        .command { color: var(--neon-cyan); }
+        .output { color: rgba(0, 255, 255, 0.7); }
+        .success { color: #00ff00; }
+        .warning { color: #ffff00; }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--neon-cyan);
+            animation: blink 1s infinite;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--dark-bg) 0%, rgba(128, 0, 255, 0.1) 50%, var(--dark-bg) 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(26, 26, 46, 0.6);
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 20px var(--neon-purple);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--neon-magenta);
+            border-color: var(--neon-magenta);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotateCTA 20s linear infinite;
+        }
+
+        @keyframes rotateCTA {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+
+        .cta-text {
+            font-size: 1.3rem;
+            color: rgba(0, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-panel);
+            border-top: 2px solid var(--neon-cyan);
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-magenta);
+            text-shadow: 0 0 10px var(--neon-magenta);
+        }
+
+        .copyright {
+            color: rgba(0, 255, 255, 0.5);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .glitch-text {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-title::before,
+            .section-title::after {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">DEEP-CODEBASE</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#install">Install</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="glitch-text">
+                <span class="main-text">DEEP-CODEBASE</span>
+            </h1>
+            <p class="subtitle">// NEURAL CODEBASE INTERFACE v2.0.77 //</p>
+            <p class="hero-description">
+                JACK INTO YOUR CODEBASE. AI-powered intelligence that understands your entire project architecture.
+                Lightning-fast semantic search, instant context retrieval, and neural pattern recognition.
+                The future of code analysis is here.
+            </p>
+            <div class="cta-buttons">
+                <a href="#install" class="btn btn-primary">INITIALIZE SYSTEM</a>
+                <a href="#demo" class="btn btn-secondary">VIEW TRANSMISSION</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">SYSTEM CAPABILITIES</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Lightning Query</h3>
+                <p class="feature-description">
+                    Sub-second semantic search across millions of lines. Neural vector indexing for instant pattern recognition.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">Deep Context</h3>
+                <p class="feature-description">
+                    Full codebase consciousness. Understands architecture, dependencies, and relationships across your entire system.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3 class="feature-title">AI Integration</h3>
+                <p class="feature-description">
+                    Direct neural link to Claude AI. Your codebase knowledge amplified through artificial intelligence.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">Zero Latency</h3>
+                <p class="feature-description">
+                    Optimized indexing engine. Process gigabytes of code in seconds. Real-time analysis without the wait.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Local Processing</h3>
+                <p class="feature-description">
+                    Your code never leaves your system. Privacy-first architecture with military-grade security protocols.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3 class="feature-title">Universal Compat</h3>
+                <p class="feature-description">
+                    Works with any language, any framework, any architecture. From legacy COBOL to cutting-edge Rust.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terminal Demo -->
+    <section class="terminal-section" id="demo">
+        <h2 class="section-title">LIVE TRANSMISSION</h2>
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-button btn-red"></span>
+                <span class="terminal-button btn-yellow"></span>
+                <span class="terminal-button btn-green"></span>
+                <span class="terminal-title">NEURAL_TERMINAL://</span>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">❯</span> <span class="command">npx deep-codebase init</span>
+                </div>
+                <div class="terminal-line output">
+                    <span class="success">✓</span> Neural network initialized...
+                </div>
+                <div class="terminal-line output">
+                    <span class="success">✓</span> Scanning filesystem matrix...
+                </div>
+                <div class="terminal-line output">
+                    <span class="success">✓</span> Indexing codebase vectors...
+                </div>
+                <div class="terminal-line output">
+                    <span class="warning">⚡</span> Processing 2,847 files | 486,392 LOC
+                </div>
+                <div class="terminal-line output">
+                    <span class="success">✓</span> System ready. Connection established.
+                </div>
+                <div class="terminal-line" style="margin-top: 1rem;">
+                    <span class="prompt">❯</span> <span class="command">deep-codebase query "authentication flow"</span>
+                </div>
+                <div class="terminal-line output">
+                    <span class="success">⚡</span> Found 23 relevant code blocks in 0.08s
+                </div>
+                <div class="terminal-line output">
+                    📂 src/auth/middleware.ts:45-78
+                </div>
+                <div class="terminal-line output">
+                    📂 src/api/routes/auth.ts:12-34
+                </div>
+                <div class="terminal-line output">
+                    📂 src/services/jwt.service.ts:89-120
+                </div>
+                <div class="terminal-line" style="margin-top: 1rem;">
+                    <span class="prompt">❯</span> <span class="cursor"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <h2 class="section-title">SYSTEM METRICS</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">0.08s</div>
+                <div class="stat-label">Query Speed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1M+</div>
+                <div class="stat-label">Lines Indexed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Local Privacy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Languages</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="install">
+        <div class="cta-content">
+            <h2 class="cta-title">INITIALIZE CONNECTION</h2>
+            <p class="cta-text">
+                Join the neural revolution. Install deep-codebase and experience the future of code intelligence.
+                One command to unlock unlimited power.
+            </p>
+            <div class="terminal-window" style="max-width: 600px; margin: 0 auto;">
+                <div class="terminal-header">
+                    <span class="terminal-button btn-red"></span>
+                    <span class="terminal-button btn-yellow"></span>
+                    <span class="terminal-button btn-green"></span>
+                    <span class="terminal-title">INSTALL://</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt">❯</span> <span class="command">npx deep-codebase init</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 3rem;">
+                <a href="https://github.com/yourusername/deep-codebase" class="btn btn-primary">ACCESS REPOSITORY</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">Documentation</a>
+                <a href="#">GitHub</a>
+                <a href="#">Discord</a>
+                <a href="#">Twitter</a>
+            </div>
+            <p class="copyright">
+                © 2077 DEEP-CODEBASE // NEURAL SYSTEMS DIVISION // ALL RIGHTS RESERVED
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const colors = ['#00ffff', '#ff00ff', '#ff0080', '#0080ff'];
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
+                particle.style.animation = `float ${3 + Math.random() * 4}s ease-in-out infinite`;
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Add float animation dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translate(0, 0); }
+                25% { transform: translate(10px, -20px); }
+                50% { transform: translate(-10px, -40px); }
+                75% { transform: translate(15px, -20px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        createParticles();
+    </script>
+</body>
+</html>

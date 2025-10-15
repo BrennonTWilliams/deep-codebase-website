@@ -1,0 +1,1076 @@
+/**
+ * BLUEPRINT TECHNICAL DESIGN SYSTEM
+ * Engineering-inspired CSS framework with precise measurements and technical aesthetics
+ */
+
+/* ============================================
+   COLOR SYSTEM - Technical Palette
+   ============================================ */
+:root {
+  /* Blueprint Blues - Primary technical colors */
+  --bp-deep-blue: #0a1929;
+  --bp-dark-blue: #0f2744;
+  --bp-medium-blue: #1a3a5c;
+  --bp-bright-blue: #2196f3;
+  --bp-cyan: #00b8d4;
+  --bp-light-blue: #4fc3f7;
+
+  /* Engineering Grays - Neutral technical tones */
+  --bp-charcoal: #1c1c1e;
+  --bp-dark-gray: #2c2c2e;
+  --bp-medium-gray: #48484a;
+  --bp-light-gray: #8e8e93;
+  --bp-pale-gray: #c7c7cc;
+  --bp-off-white: #e5e5ea;
+
+  /* Technical Accents */
+  --bp-grid-line: rgba(33, 150, 243, 0.12);
+  --bp-grid-line-major: rgba(33, 150, 243, 0.25);
+  --bp-highlight: rgba(33, 150, 243, 0.08);
+  --bp-border: rgba(33, 150, 243, 0.3);
+  --bp-shadow: rgba(10, 25, 41, 0.5);
+
+  /* Semantic Colors */
+  --bp-success: #4caf50;
+  --bp-warning: #ff9800;
+  --bp-error: #f44336;
+  --bp-info: var(--bp-bright-blue);
+
+  /* Surface Colors */
+  --bp-surface-base: var(--bp-deep-blue);
+  --bp-surface-raised: var(--bp-dark-blue);
+  --bp-surface-overlay: var(--bp-medium-blue);
+
+  /* Text Colors */
+  --bp-text-primary: #e8eaf6;
+  --bp-text-secondary: #b0bec5;
+  --bp-text-tertiary: #78909c;
+  --bp-text-inverse: var(--bp-deep-blue);
+
+  /* ============================================
+     SPACING SYSTEM - Precise Measurements
+     ============================================ */
+  --bp-space-0: 0;
+  --bp-space-1: 0.25rem;    /* 4px */
+  --bp-space-2: 0.5rem;     /* 8px */
+  --bp-space-3: 0.75rem;    /* 12px */
+  --bp-space-4: 1rem;       /* 16px */
+  --bp-space-5: 1.25rem;    /* 20px */
+  --bp-space-6: 1.5rem;     /* 24px */
+  --bp-space-8: 2rem;       /* 32px */
+  --bp-space-10: 2.5rem;    /* 40px */
+  --bp-space-12: 3rem;      /* 48px */
+  --bp-space-16: 4rem;      /* 64px */
+  --bp-space-20: 5rem;      /* 80px */
+  --bp-space-24: 6rem;      /* 96px */
+
+  /* ============================================
+     TYPOGRAPHY SYSTEM - Technical Fonts
+     ============================================ */
+  --bp-font-mono: 'IBM Plex Mono', 'Roboto Mono', 'SF Mono', Monaco, monospace;
+  --bp-font-technical: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', monospace;
+  --bp-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* Font Sizes - Technical Scale */
+  --bp-text-xs: 0.6875rem;   /* 11px */
+  --bp-text-sm: 0.8125rem;   /* 13px */
+  --bp-text-base: 0.9375rem; /* 15px */
+  --bp-text-lg: 1.0625rem;   /* 17px */
+  --bp-text-xl: 1.25rem;     /* 20px */
+  --bp-text-2xl: 1.5rem;     /* 24px */
+  --bp-text-3xl: 1.875rem;   /* 30px */
+  --bp-text-4xl: 2.25rem;    /* 36px */
+  --bp-text-5xl: 3rem;       /* 48px */
+
+  /* Line Heights - Precise */
+  --bp-leading-tight: 1.25;
+  --bp-leading-snug: 1.375;
+  --bp-leading-normal: 1.5;
+  --bp-leading-relaxed: 1.625;
+  --bp-leading-loose: 2;
+
+  /* Letter Spacing - Technical */
+  --bp-tracking-tighter: -0.05em;
+  --bp-tracking-tight: -0.025em;
+  --bp-tracking-normal: 0;
+  --bp-tracking-wide: 0.025em;
+  --bp-tracking-wider: 0.05em;
+  --bp-tracking-widest: 0.1em;
+
+  /* ============================================
+     GRID SYSTEM - Engineering Precision
+     ============================================ */
+  --bp-grid-size: 8px;
+  --bp-grid-columns: 12;
+  --bp-grid-gap: var(--bp-space-4);
+  --bp-grid-line-width: 1px;
+
+  /* ============================================
+     BORDERS & RADII - Technical Lines
+     ============================================ */
+  --bp-border-width: 1px;
+  --bp-border-width-2: 2px;
+  --bp-border-width-4: 4px;
+
+  --bp-radius-none: 0;
+  --bp-radius-sm: 0.125rem;  /* 2px */
+  --bp-radius-md: 0.25rem;   /* 4px */
+  --bp-radius-lg: 0.5rem;    /* 8px */
+  --bp-radius-xl: 0.75rem;   /* 12px */
+
+  /* ============================================
+     SHADOWS & DEPTH - Subtle Engineering
+     ============================================ */
+  --bp-shadow-sm: 0 1px 2px 0 var(--bp-shadow);
+  --bp-shadow-md: 0 4px 6px -1px var(--bp-shadow), 0 2px 4px -1px var(--bp-shadow);
+  --bp-shadow-lg: 0 10px 15px -3px var(--bp-shadow), 0 4px 6px -2px var(--bp-shadow);
+  --bp-shadow-xl: 0 20px 25px -5px var(--bp-shadow), 0 10px 10px -5px var(--bp-shadow);
+  --bp-shadow-inner: inset 0 2px 4px 0 var(--bp-shadow);
+
+  /* Technical Glows */
+  --bp-glow-sm: 0 0 4px var(--bp-bright-blue);
+  --bp-glow-md: 0 0 8px var(--bp-bright-blue);
+  --bp-glow-lg: 0 0 16px var(--bp-bright-blue);
+
+  /* ============================================
+     TRANSITIONS - Mechanical Precision
+     ============================================ */
+  --bp-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --bp-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --bp-transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --bp-transition-mechanical: 300ms cubic-bezier(0.2, 0, 0.8, 1);
+
+  /* ============================================
+     Z-INDEX SYSTEM - Layering
+     ============================================ */
+  --bp-z-base: 0;
+  --bp-z-grid: -1;
+  --bp-z-raised: 10;
+  --bp-z-dropdown: 100;
+  --bp-z-sticky: 200;
+  --bp-z-fixed: 300;
+  --bp-z-overlay: 400;
+  --bp-z-modal: 500;
+  --bp-z-popover: 600;
+  --bp-z-tooltip: 700;
+}
+
+/* ============================================
+   BASE STYLES - Foundation
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-text-base);
+  line-height: var(--bp-leading-normal);
+  color: var(--bp-text-primary);
+  background-color: var(--bp-surface-base);
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Technical Grid Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(var(--bp-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bp-grid-line) 1px, transparent 1px),
+    linear-gradient(var(--bp-grid-line-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bp-grid-line-major) 1px, transparent 1px);
+  background-size:
+    8px 8px,
+    8px 8px,
+    80px 80px,
+    80px 80px;
+  background-position:
+    -1px -1px,
+    -1px -1px,
+    -1px -1px,
+    -1px -1px;
+  pointer-events: none;
+  z-index: var(--bp-z-grid);
+  opacity: 0.4;
+}
+
+/* ============================================
+   TYPOGRAPHY STYLES
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--bp-font-technical);
+  font-weight: 600;
+  letter-spacing: var(--bp-tracking-tight);
+  line-height: var(--bp-leading-tight);
+  color: var(--bp-text-primary);
+  margin-bottom: var(--bp-space-4);
+}
+
+h1 {
+  font-size: var(--bp-text-5xl);
+  letter-spacing: var(--bp-tracking-tighter);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--bp-border);
+  padding-bottom: var(--bp-space-4);
+  margin-bottom: var(--bp-space-8);
+}
+
+h2 {
+  font-size: var(--bp-text-4xl);
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wide);
+}
+
+h3 {
+  font-size: var(--bp-text-3xl);
+  letter-spacing: var(--bp-tracking-wide);
+}
+
+h4 {
+  font-size: var(--bp-text-2xl);
+  letter-spacing: var(--bp-tracking-wider);
+}
+
+h5 {
+  font-size: var(--bp-text-xl);
+}
+
+h6 {
+  font-size: var(--bp-text-lg);
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-widest);
+}
+
+p {
+  margin-bottom: var(--bp-space-4);
+  color: var(--bp-text-secondary);
+}
+
+/* Technical Label Style */
+.bp-label {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-widest);
+  color: var(--bp-text-tertiary);
+  font-weight: 500;
+}
+
+/* Monospace Text */
+.bp-mono,
+code,
+pre {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-sm);
+}
+
+code {
+  background-color: var(--bp-surface-raised);
+  padding: var(--bp-space-1) var(--bp-space-2);
+  border-radius: var(--bp-radius-sm);
+  border: 1px solid var(--bp-border);
+  color: var(--bp-cyan);
+}
+
+pre {
+  background-color: var(--bp-surface-raised);
+  padding: var(--bp-space-4);
+  border-radius: var(--bp-radius-md);
+  border: 1px solid var(--bp-border);
+  overflow-x: auto;
+  line-height: var(--bp-leading-relaxed);
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* ============================================
+   LAYOUT SYSTEM - Grid & Container
+   ============================================ */
+.bp-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--bp-space-6);
+  padding-right: var(--bp-space-6);
+}
+
+.bp-container-fluid {
+  width: 100%;
+  padding-left: var(--bp-space-6);
+  padding-right: var(--bp-space-6);
+}
+
+/* Grid System */
+.bp-grid {
+  display: grid;
+  gap: var(--bp-grid-gap);
+  grid-template-columns: repeat(var(--bp-grid-columns), 1fr);
+}
+
+.bp-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.bp-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.bp-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.bp-grid-6 { grid-template-columns: repeat(6, 1fr); }
+
+/* Flexbox Utilities */
+.bp-flex {
+  display: flex;
+  gap: var(--bp-space-4);
+}
+
+.bp-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bp-space-4);
+}
+
+.bp-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bp-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ============================================
+   CARD COMPONENTS - Technical Containers
+   ============================================ */
+.bp-card {
+  background-color: var(--bp-surface-raised);
+  border: 1px solid var(--bp-border);
+  border-radius: var(--bp-radius-md);
+  padding: var(--bp-space-6);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--bp-transition-base);
+}
+
+/* Technical Corner Markers */
+.bp-card::before,
+.bp-card::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bp-bright-blue);
+  opacity: 0.5;
+  transition: opacity var(--bp-transition-base);
+}
+
+.bp-card::before {
+  top: var(--bp-space-2);
+  left: var(--bp-space-2);
+  border-right: none;
+  border-bottom: none;
+}
+
+.bp-card::after {
+  bottom: var(--bp-space-2);
+  right: var(--bp-space-2);
+  border-left: none;
+  border-top: none;
+}
+
+.bp-card:hover {
+  border-color: var(--bp-bright-blue);
+  box-shadow: var(--bp-shadow-lg), var(--bp-glow-sm);
+  transform: translateY(-2px);
+}
+
+.bp-card:hover::before,
+.bp-card:hover::after {
+  opacity: 1;
+}
+
+/* Card Header with Technical Divider */
+.bp-card-header {
+  margin-bottom: var(--bp-space-6);
+  padding-bottom: var(--bp-space-4);
+  border-bottom: 1px dashed var(--bp-border);
+  position: relative;
+}
+
+.bp-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--bp-bright-blue), transparent);
+}
+
+.bp-card-title {
+  font-family: var(--bp-font-technical);
+  font-size: var(--bp-text-xl);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wide);
+  margin: 0;
+}
+
+.bp-card-subtitle {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-sm);
+  color: var(--bp-text-tertiary);
+  margin-top: var(--bp-space-2);
+}
+
+.bp-card-body {
+  color: var(--bp-text-secondary);
+}
+
+.bp-card-footer {
+  margin-top: var(--bp-space-6);
+  padding-top: var(--bp-space-4);
+  border-top: 1px solid var(--bp-border);
+}
+
+/* Technical Spec Card */
+.bp-card-spec {
+  background-color: var(--bp-surface-base);
+  border-left: 4px solid var(--bp-bright-blue);
+  padding: var(--bp-space-4);
+}
+
+.bp-card-spec::before,
+.bp-card-spec::after {
+  display: none;
+}
+
+/* ============================================
+   BUTTONS - Mechanical Interactions
+   ============================================ */
+.bp-btn {
+  font-family: var(--bp-font-technical);
+  font-size: var(--bp-text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wider);
+  padding: var(--bp-space-3) var(--bp-space-6);
+  border: 1px solid var(--bp-border);
+  border-radius: var(--bp-radius-md);
+  background-color: var(--bp-surface-raised);
+  color: var(--bp-text-primary);
+  cursor: pointer;
+  transition: all var(--bp-transition-mechanical);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bp-space-2);
+}
+
+.bp-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--bp-highlight), transparent);
+  transition: left var(--bp-transition-mechanical);
+}
+
+.bp-btn:hover {
+  border-color: var(--bp-bright-blue);
+  background-color: var(--bp-surface-overlay);
+  box-shadow: var(--bp-shadow-md), var(--bp-glow-sm);
+  transform: translateY(-1px);
+}
+
+.bp-btn:hover::before {
+  left: 100%;
+}
+
+.bp-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--bp-shadow-sm);
+}
+
+/* Primary Button */
+.bp-btn-primary {
+  background-color: var(--bp-bright-blue);
+  border-color: var(--bp-bright-blue);
+  color: white;
+}
+
+.bp-btn-primary:hover {
+  background-color: var(--bp-light-blue);
+  border-color: var(--bp-light-blue);
+  box-shadow: var(--bp-shadow-md), var(--bp-glow-md);
+}
+
+/* Ghost Button */
+.bp-btn-ghost {
+  background-color: transparent;
+  border-color: var(--bp-border);
+}
+
+.bp-btn-ghost:hover {
+  background-color: var(--bp-highlight);
+}
+
+/* Icon Button */
+.bp-btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--bp-radius-md);
+}
+
+/* ============================================
+   BORDERS & DIVIDERS - Technical Lines
+   ============================================ */
+.bp-divider {
+  height: 1px;
+  background-color: var(--bp-border);
+  margin: var(--bp-space-6) 0;
+  position: relative;
+}
+
+.bp-divider-dashed {
+  background: none;
+  border-top: 1px dashed var(--bp-border);
+}
+
+.bp-divider-dotted {
+  background: none;
+  border-top: 2px dotted var(--bp-border);
+}
+
+/* Technical Section Divider */
+.bp-divider-section {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--bp-border), transparent);
+  margin: var(--bp-space-12) 0;
+  position: relative;
+}
+
+.bp-divider-section::before,
+.bp-divider-section::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--bp-bright-blue);
+  background-color: var(--bp-surface-base);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.bp-divider-section::before {
+  left: 0;
+}
+
+.bp-divider-section::after {
+  right: 0;
+}
+
+/* Blueprint Border Styles */
+.bp-border {
+  border: 1px solid var(--bp-border);
+}
+
+.bp-border-dashed {
+  border: 1px dashed var(--bp-border);
+}
+
+.bp-border-dotted {
+  border: 2px dotted var(--bp-border);
+}
+
+.bp-border-thick {
+  border: 2px solid var(--bp-border);
+}
+
+/* Technical Frame Border */
+.bp-frame {
+  border: 2px solid var(--bp-border);
+  position: relative;
+  padding: var(--bp-space-6);
+}
+
+.bp-frame::before,
+.bp-frame::after,
+.bp-frame .bp-frame-corner::before,
+.bp-frame .bp-frame-corner::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--bp-bright-blue);
+}
+
+.bp-frame::before {
+  top: -3px;
+  left: -3px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.bp-frame::after {
+  top: -3px;
+  right: -3px;
+  border-left: none;
+  border-bottom: none;
+}
+
+/* ============================================
+   BADGES & TAGS - Technical Indicators
+   ============================================ */
+.bp-badge {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-widest);
+  padding: var(--bp-space-1) var(--bp-space-3);
+  border-radius: var(--bp-radius-sm);
+  border: 1px solid var(--bp-border);
+  background-color: var(--bp-surface-raised);
+  color: var(--bp-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bp-space-1);
+}
+
+.bp-badge-primary {
+  background-color: rgba(33, 150, 243, 0.15);
+  border-color: var(--bp-bright-blue);
+  color: var(--bp-bright-blue);
+}
+
+.bp-badge-success {
+  background-color: rgba(76, 175, 80, 0.15);
+  border-color: var(--bp-success);
+  color: var(--bp-success);
+}
+
+.bp-badge-warning {
+  background-color: rgba(255, 152, 0, 0.15);
+  border-color: var(--bp-warning);
+  color: var(--bp-warning);
+}
+
+.bp-badge-error {
+  background-color: rgba(244, 67, 54, 0.15);
+  border-color: var(--bp-error);
+  color: var(--bp-error);
+}
+
+/* Status Indicator Dot */
+.bp-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: bp-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   FORMS - Technical Input Elements
+   ============================================ */
+.bp-form-group {
+  margin-bottom: var(--bp-space-6);
+}
+
+.bp-form-label {
+  display: block;
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wider);
+  color: var(--bp-text-secondary);
+  margin-bottom: var(--bp-space-2);
+}
+
+.bp-input,
+.bp-textarea,
+.bp-select {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-base);
+  width: 100%;
+  padding: var(--bp-space-3) var(--bp-space-4);
+  background-color: var(--bp-surface-raised);
+  border: 1px solid var(--bp-border);
+  border-radius: var(--bp-radius-md);
+  color: var(--bp-text-primary);
+  transition: all var(--bp-transition-base);
+}
+
+.bp-input:focus,
+.bp-textarea:focus,
+.bp-select:focus {
+  outline: none;
+  border-color: var(--bp-bright-blue);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1), var(--bp-glow-sm);
+  background-color: var(--bp-surface-base);
+}
+
+.bp-input::placeholder,
+.bp-textarea::placeholder {
+  color: var(--bp-text-tertiary);
+}
+
+.bp-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Technical Input with Measurement Units */
+.bp-input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.bp-input-group .bp-input {
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bp-input-addon {
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-sm);
+  display: flex;
+  align-items: center;
+  padding: var(--bp-space-3) var(--bp-space-4);
+  background-color: var(--bp-surface-base);
+  border: 1px solid var(--bp-border);
+  border-left: none;
+  border-top-right-radius: var(--bp-radius-md);
+  border-bottom-right-radius: var(--bp-radius-md);
+  color: var(--bp-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wide);
+}
+
+/* ============================================
+   TABLES - Technical Data Display
+   ============================================ */
+.bp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--bp-font-mono);
+  font-size: var(--bp-text-sm);
+}
+
+.bp-table thead {
+  background-color: var(--bp-surface-raised);
+}
+
+.bp-table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--bp-tracking-wider);
+  padding: var(--bp-space-3) var(--bp-space-4);
+  text-align: left;
+  border-bottom: 2px solid var(--bp-border);
+  color: var(--bp-text-secondary);
+  position: relative;
+}
+
+.bp-table th::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--bp-bright-blue), transparent);
+}
+
+.bp-table td {
+  padding: var(--bp-space-3) var(--bp-space-4);
+  border-bottom: 1px solid var(--bp-border);
+  color: var(--bp-text-primary);
+}
+
+.bp-table tbody tr {
+  transition: background-color var(--bp-transition-fast);
+}
+
+.bp-table tbody tr:hover {
+  background-color: var(--bp-highlight);
+}
+
+.bp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================
+   ANIMATIONS - Mechanical Precision
+   ============================================ */
+@keyframes bp-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bp-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes bp-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bp-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Loading Indicator */
+.bp-loading {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bp-border);
+  border-top-color: var(--bp-bright-blue);
+  border-radius: 50%;
+  animation: bp-rotate 0.8s linear infinite;
+}
+
+/* Scan Line Effect */
+.bp-scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.bp-scan-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--bp-bright-blue), transparent);
+  animation: bp-scan 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+/* Shimmer Effect */
+.bp-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bp-surface-raised) 0%,
+    var(--bp-surface-overlay) 50%,
+    var(--bp-surface-raised) 100%
+  );
+  background-size: 200% 100%;
+  animation: bp-shimmer 2s ease-in-out infinite;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+/* Spacing Utilities */
+.bp-m-0 { margin: var(--bp-space-0); }
+.bp-m-1 { margin: var(--bp-space-1); }
+.bp-m-2 { margin: var(--bp-space-2); }
+.bp-m-3 { margin: var(--bp-space-3); }
+.bp-m-4 { margin: var(--bp-space-4); }
+.bp-m-6 { margin: var(--bp-space-6); }
+.bp-m-8 { margin: var(--bp-space-8); }
+
+.bp-p-0 { padding: var(--bp-space-0); }
+.bp-p-1 { padding: var(--bp-space-1); }
+.bp-p-2 { padding: var(--bp-space-2); }
+.bp-p-3 { padding: var(--bp-space-3); }
+.bp-p-4 { padding: var(--bp-space-4); }
+.bp-p-6 { padding: var(--bp-space-6); }
+.bp-p-8 { padding: var(--bp-space-8); }
+
+/* Text Utilities */
+.bp-text-center { text-align: center; }
+.bp-text-left { text-align: left; }
+.bp-text-right { text-align: right; }
+
+.bp-text-primary { color: var(--bp-text-primary); }
+.bp-text-secondary { color: var(--bp-text-secondary); }
+.bp-text-tertiary { color: var(--bp-text-tertiary); }
+
+.bp-uppercase { text-transform: uppercase; }
+.bp-lowercase { text-transform: lowercase; }
+
+/* Background Utilities */
+.bp-bg-base { background-color: var(--bp-surface-base); }
+.bp-bg-raised { background-color: var(--bp-surface-raised); }
+.bp-bg-overlay { background-color: var(--bp-surface-overlay); }
+
+/* Border Utilities */
+.bp-rounded-none { border-radius: var(--bp-radius-none); }
+.bp-rounded-sm { border-radius: var(--bp-radius-sm); }
+.bp-rounded-md { border-radius: var(--bp-radius-md); }
+.bp-rounded-lg { border-radius: var(--bp-radius-lg); }
+
+/* Shadow Utilities */
+.bp-shadow-sm { box-shadow: var(--bp-shadow-sm); }
+.bp-shadow-md { box-shadow: var(--bp-shadow-md); }
+.bp-shadow-lg { box-shadow: var(--bp-shadow-lg); }
+.bp-shadow-glow { box-shadow: var(--bp-glow-md); }
+
+/* Display Utilities */
+.bp-block { display: block; }
+.bp-inline-block { display: inline-block; }
+.bp-inline { display: inline; }
+.bp-hidden { display: none; }
+
+/* ============================================
+   RESPONSIVE DESIGN - Breakpoints
+   ============================================ */
+@media (max-width: 1280px) {
+  :root {
+    --bp-space-6: 1.25rem;
+  }
+  .bp-container {
+    max-width: 1024px;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --bp-text-5xl: 2.5rem;
+    --bp-text-4xl: 2rem;
+  }
+  .bp-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bp-grid-6 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --bp-space-6: 1rem;
+    --bp-text-5xl: 2rem;
+    --bp-text-4xl: 1.75rem;
+  }
+  .bp-grid-2,
+  .bp-grid-3,
+  .bp-grid-4,
+  .bp-grid-6 {
+    grid-template-columns: 1fr;
+  }
+  .bp-card {
+    padding: var(--bp-space-4);
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+  .bp-container,
+  .bp-container-fluid {
+    padding-left: var(--bp-space-4);
+    padding-right: var(--bp-space-4);
+  }
+  body::before {
+    background-size:
+      4px 4px,
+      4px 4px,
+      40px 40px,
+      40px 40px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.bp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Visible for Keyboard Navigation */
+*:focus-visible {
+  outline: 2px solid var(--bp-bright-blue);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  body::before {
+    display: none;
+  }
+  .bp-card {
+    border: 2px solid black;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  .bp-btn {
+    display: none;
+  }
+}

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Codebase - Terminal Carousel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(59, 130, 246, 0.1);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-button.red {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .terminal-button.yellow {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .terminal-button.green {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .terminal-title {
+            margin-left: 16px;
+            color: #64748b;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-body {
+            padding: 32px;
+            background: #0f172a;
+            position: relative;
+            min-height: 180px;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .command-slide {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            pointer-events: none;
+        }
+
+        .command-slide.active {
+            opacity: 1;
+            position: relative;
+            pointer-events: auto;
+        }
+
+        .terminal-prompt {
+            color: #3b82f6;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prompt-symbol {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .prompt-path {
+            color: #3b82f6;
+        }
+
+        .command-text {
+            color: #e2e8f0;
+            font-size: 18px;
+            line-height: 1.6;
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .command-name {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .command-arg {
+            color: #f59e0b;
+        }
+
+        .command-string {
+            color: #ec4899;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #3b82f6;
+            margin-left: 4px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #3b82f6;
+            width: 0;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid #334155;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #475569;
+        }
+
+        .dot.active {
+            background: #3b82f6;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+            transform: scale(1.3);
+        }
+
+        .dot:hover:not(.active) {
+            background: #475569;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .terminal-body {
+                padding: 20px;
+                min-height: 200px;
+            }
+
+            .terminal-prompt,
+            .command-text {
+                font-size: 14px;
+            }
+
+            .cursor {
+                width: 8px;
+                height: 16px;
+            }
+
+            .terminal-title {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .terminal-body {
+                padding: 16px;
+            }
+
+            .terminal-prompt,
+            .command-text {
+                font-size: 12px;
+            }
+
+            .carousel-dots {
+                padding: 16px;
+                gap: 8px;
+            }
+
+            .dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-button red"></div>
+            <div class="terminal-button yellow"></div>
+            <div class="terminal-button green"></div>
+            <span class="terminal-title">deep-codebase@terminal:~</span>
+        </div>
+
+        <div class="terminal-body">
+            <div class="carousel-wrapper" id="carouselWrapper">
+                <!-- Slide 1 -->
+                <div class="command-slide active" data-index="0">
+                    <div class="terminal-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="prompt-path">~/projects</span>
+                    </div>
+                    <div class="command-text">
+                        <span class="command-name">deep-codebase</span>
+                        <span>extract</span>
+                        <span class="command-arg">https://github.com/All-Hands-AI/OpenHands</span>
+                        <span class="command-string">"task decomposition"</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="command-slide" data-index="1">
+                    <div class="terminal-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="prompt-path">~/projects</span>
+                    </div>
+                    <div class="command-text">
+                        <span class="command-name">deep-codebase</span>
+                        <span>extract</span>
+                        <span class="command-arg">https://github.com/Aider-AI/aider</span>
+                        <span class="command-string">"codebase indexing"</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="command-slide" data-index="2">
+                    <div class="terminal-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="prompt-path">~/projects</span>
+                    </div>
+                    <div class="command-text">
+                        <span class="command-name">deep-codebase</span>
+                        <span>extract</span>
+                        <span class="command-arg">https://github.com/firecrawl/open-lovable</span>
+                        <span class="command-string">"agent orchestration"</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="carousel-dots" id="carouselDots">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
+        </div>
+    </div>
+
+    <script>
+        class TerminalCarousel {
+            constructor() {
+                this.slides = document.querySelectorAll('.command-slide');
+                this.dots = document.querySelectorAll('.dot');
+                this.progressBar = document.getElementById('progressBar');
+                this.currentIndex = 0;
+                this.interval = 8000; // 8 seconds
+                this.progressInterval = null;
+                this.autoplayTimer = null;
+                this.progressStart = 0;
+
+                this.init();
+            }
+
+            init() {
+                // Add click handlers to dots
+                this.dots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        const index = parseInt(dot.dataset.index);
+                        this.goToSlide(index);
+                    });
+                });
+
+                // Start autoplay
+                this.startAutoplay();
+            }
+
+            goToSlide(index) {
+                // Remove active class from current slide and dot
+                this.slides[this.currentIndex].classList.remove('active');
+                this.dots[this.currentIndex].classList.remove('active');
+
+                // Update current index
+                this.currentIndex = index;
+
+                // Add active class to new slide and dot
+                this.slides[this.currentIndex].classList.add('active');
+                this.dots[this.currentIndex].classList.add('active');
+
+                // Reset progress bar
+                this.resetProgress();
+
+                // Restart autoplay
+                this.startAutoplay();
+            }
+
+            nextSlide() {
+                const nextIndex = (this.currentIndex + 1) % this.slides.length;
+                this.goToSlide(nextIndex);
+            }
+
+            startAutoplay() {
+                // Clear existing timers
+                this.stopAutoplay();
+
+                // Reset and start progress bar
+                this.progressStart = Date.now();
+                this.animateProgress();
+
+                // Set timer for next slide
+                this.autoplayTimer = setTimeout(() => {
+                    this.nextSlide();
+                }, this.interval);
+            }
+
+            stopAutoplay() {
+                if (this.autoplayTimer) {
+                    clearTimeout(this.autoplayTimer);
+                    this.autoplayTimer = null;
+                }
+                if (this.progressInterval) {
+                    cancelAnimationFrame(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            }
+
+            animateProgress() {
+                const animate = () => {
+                    const elapsed = Date.now() - this.progressStart;
+                    const progress = Math.min((elapsed / this.interval) * 100, 100);
+                    this.progressBar.style.width = `${progress}%`;
+
+                    if (progress < 100) {
+                        this.progressInterval = requestAnimationFrame(animate);
+                    }
+                };
+
+                this.progressInterval = requestAnimationFrame(animate);
+            }
+
+            resetProgress() {
+                this.progressBar.style.width = '0%';
+                if (this.progressInterval) {
+                    cancelAnimationFrame(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            }
+        }
+
+        // Initialize carousel when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new TerminalCarousel();
+        });
+
+        // Pause autoplay when tab is hidden, resume when visible
+        document.addEventListener('visibilitychange', () => {
+            const carousel = window.terminalCarousel;
+            if (carousel) {
+                if (document.hidden) {
+                    carousel.stopAutoplay();
+                } else {
+                    carousel.startAutoplay();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>deep-codebase - API & Capability Discovery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0a0e27;
+            --bg-mid: #1a1f3a;
+            --accent-cyan: #00d9ff;
+            --accent-magenta: #ff006e;
+            --accent-yellow: #ffbe0b;
+            --accent-green: #06ffa5;
+            --accent-purple: #8338ec;
+            --text-primary: #e8f4f8;
+            --text-dim: #8b9bb4;
+            --overlay: rgba(10, 14, 39, 0.85);
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Abstract Code Background */
+        .code-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .code-fragment {
+            position: absolute;
+            font-size: 14px;
+            opacity: 0.15;
+            color: var(--accent-cyan);
+            pointer-events: none;
+            white-space: pre;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .code-fragment:nth-child(2) {
+            top: 10%; left: 5%;
+            color: var(--accent-magenta);
+            animation-delay: -5s;
+            font-size: 12px;
+        }
+        .code-fragment:nth-child(3) {
+            top: 25%; right: 10%;
+            color: var(--accent-yellow);
+            animation-delay: -10s;
+            font-size: 16px;
+        }
+        .code-fragment:nth-child(4) {
+            bottom: 30%; left: 15%;
+            color: var(--accent-green);
+            animation-delay: -15s;
+            font-size: 11px;
+        }
+        .code-fragment:nth-child(5) {
+            top: 60%; right: 20%;
+            color: var(--accent-purple);
+            animation-delay: -8s;
+            font-size: 13px;
+        }
+        .code-fragment:nth-child(6) {
+            bottom: 10%; right: 5%;
+            color: var(--accent-cyan);
+            animation-delay: -12s;
+            font-size: 15px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -30px) rotate(2deg); }
+            50% { transform: translate(-15px, 20px) rotate(-2deg); }
+            75% { transform: translate(30px, 10px) rotate(1deg); }
+        }
+
+        /* Geometric SVG Background */
+        .geometric-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Main Content */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .hero-geometric {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            animation: rotate-slow 60s infinite linear;
+        }
+
+        @keyframes rotate-slow {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo-hexagon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px var(--accent-cyan))
+                        drop-shadow(0 0 40px var(--accent-cyan));
+            }
+            50% {
+                filter: drop-shadow(0 0 40px var(--accent-magenta))
+                        drop-shadow(0 0 60px var(--accent-magenta));
+            }
+        }
+
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .logo-text::before {
+            content: '{ ';
+            color: var(--accent-green);
+            -webkit-text-fill-color: var(--accent-green);
+        }
+
+        .logo-text::after {
+            content: ' }';
+            color: var(--accent-green);
+            -webkit-text-fill-color: var(--accent-green);
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .tagline .highlight {
+            color: var(--accent-yellow);
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            color: white;
+            box-shadow: 0 8px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.5);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .cta-secondary:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-deep);
+            transform: translateY(-2px);
+        }
+
+        /* Feature Sections */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            position: relative;
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.6), rgba(10, 14, 39, 0.8));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 217, 255, 0.2);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .feature-description {
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        .code-example {
+            background: rgba(10, 14, 39, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(131, 56, 236, 0.3);
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .code-example code {
+            color: var(--accent-green);
+        }
+
+        .syntax-keyword { color: var(--accent-magenta); }
+        .syntax-string { color: var(--accent-yellow); }
+        .syntax-function { color: var(--accent-cyan); }
+        .syntax-comment { color: var(--text-dim); }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+        }
+
+        /* Installation Section */
+        .install-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, transparent, rgba(131, 56, 236, 0.05), transparent);
+        }
+
+        .install-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .install-box {
+            background: rgba(10, 14, 39, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid var(--accent-purple);
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .install-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent,
+                var(--accent-purple),
+                transparent 30%
+            );
+            animation: rotate-border 6s linear infinite;
+        }
+
+        @keyframes rotate-border {
+            100% { transform: rotate(360deg); }
+        }
+
+        .install-box::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: var(--bg-deep);
+            border-radius: 13px;
+            z-index: 1;
+        }
+
+        .install-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .install-command {
+            font-size: 1.5rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            user-select: all;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(139, 155, 180, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-magenta);
+        }
+
+        .footer-text {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1.125rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Animated Connection Lines */
+        .connection-line {
+            position: absolute;
+            stroke: var(--accent-cyan);
+            stroke-width: 1;
+            opacity: 0.3;
+            animation: draw-line 3s infinite ease-in-out;
+        }
+
+        @keyframes draw-line {
+            0%, 100% { stroke-dashoffset: 1000; }
+            50% { stroke-dashoffset: 0; }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            stroke: var(--accent-cyan);
+            stroke-width: 2;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Abstract Code Background -->
+    <div class="code-canvas">
+        <div class="code-fragment">
+function parseAST(node) {
+  if (node.type === 'FunctionDeclaration') {
+    return analyzeDependencies(node);
+  }
+  return traverse(node.children);
+}
+        </div>
+        <div class="code-fragment">
+class CodeAnalyzer {
+  constructor(config) {
+    this.depth = config.depth || 5;
+    this.patterns = new Map();
+  }
+
+  analyze() {
+    return this.traverse(this.root);
+  }
+}
+        </div>
+        <div class="code-fragment">
+const dependencies = graph
+  .nodes()
+  .filter(n => n.type === 'import')
+  .map(n => ({
+    source: n.source,
+    target: n.target,
+    weight: calculateWeight(n)
+  }));
+        </div>
+        <div class="code-fragment">
+interface CodeNode {
+  id: string;
+  type: NodeType;
+  children: CodeNode[];
+  metadata: Record&lt;string, any&gt;;
+}
+
+type NodeType =
+  | 'function'
+  | 'class'
+  | 'import'
+  | 'export';
+        </div>
+        <div class="code-fragment">
+export async function deepAnalyze(
+  codebase: string,
+  options: AnalyzerOptions
+): Promise&lt;AnalysisResult&gt; {
+  const ast = await parseDirectory(codebase);
+  const graph = buildDependencyGraph(ast);
+  return generateInsights(graph, options);
+}
+        </div>
+        <div class="code-fragment">
+const metrics = {
+  complexity: calculateComplexity(node),
+  coupling: analyzeCoupling(imports),
+  cohesion: measureCohesion(methods),
+  maintainability: score(node)
+};
+        </div>
+    </div>
+
+    <!-- Geometric SVG Overlay -->
+    <svg class="geometric-overlay" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#8338ec;stop-opacity:0.3" />
+            </linearGradient>
+            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ff006e;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#ffbe0b;stop-opacity:0.3" />
+            </linearGradient>
+        </defs>
+
+        <!-- Abstract Geometric Shapes -->
+        <circle cx="10%" cy="20%" r="100" fill="none" stroke="url(#gradient1)" stroke-width="2" opacity="0.4">
+            <animate attributeName="r" values="100;120;100" dur="5s" repeatCount="indefinite" />
+        </circle>
+
+        <polygon points="90,10 150,90 30,90" fill="none" stroke="url(#gradient2)" stroke-width="2" opacity="0.3"
+                 transform="translate(80%, 30%)">
+            <animateTransform attributeName="transform" type="rotate" from="0 120 60" to="360 120 60"
+                              dur="20s" repeatCount="indefinite" additive="sum"/>
+        </polygon>
+
+        <rect x="5%" y="70%" width="150" height="150" fill="none" stroke="#06ffa5" stroke-width="2" opacity="0.2">
+            <animateTransform attributeName="transform" type="rotate" values="0;10;0" dur="8s" repeatCount="indefinite"
+                              additive="sum"/>
+        </rect>
+
+        <path d="M 0 50 Q 25 25, 50 50 T 100 50" fill="none" stroke="#ffbe0b" stroke-width="2" opacity="0.3"
+              transform="translate(70%, 60%)">
+            <animate attributeName="d" values="M 0 50 Q 25 25, 50 50 T 100 50;M 0 50 Q 25 75, 50 50 T 100 50;M 0 50 Q 25 25, 50 50 T 100 50"
+                     dur="6s" repeatCount="indefinite" />
+        </path>
+
+        <!-- Connection Lines -->
+        <line class="connection-line" x1="20%" y1="30%" x2="80%" y2="60%"
+              stroke-dasharray="5,5" />
+        <line class="connection-line" x1="60%" y1="20%" x2="40%" y2="80%"
+              stroke-dasharray="5,5" style="animation-delay: -1s;" />
+    </svg>
+
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section class="hero">
+            <svg class="hero-geometric" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="100,10 190,60 190,140 100,190 10,140 10,60"
+                         fill="none" stroke="url(#gradient1)" stroke-width="2" opacity="0.5"/>
+                <polygon points="100,30 170,70 170,130 100,170 30,130 30,70"
+                         fill="none" stroke="url(#gradient2)" stroke-width="2" opacity="0.4"/>
+                <polygon points="100,50 150,80 150,120 100,150 50,120 50,80"
+                         fill="none" stroke="#06ffa5" stroke-width="2" opacity="0.3"/>
+            </svg>
+
+            <div class="hero-content">
+                <div class="logo-container">
+                    <svg class="logo-hexagon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00d9ff" />
+                                <stop offset="50%" style="stop-color:#8338ec" />
+                                <stop offset="100%" style="stop-color:#ff006e" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+                                 fill="none" stroke="url(#logo-gradient)" stroke-width="3">
+                            <animate attributeName="stroke-dasharray" values="0,400;400,0;0,400"
+                                     dur="4s" repeatCount="indefinite" />
+                        </polygon>
+                        <text x="50" y="60" font-size="30" fill="#00d9ff" text-anchor="middle"
+                              font-family="monospace" font-weight="bold">&lt;/&gt;</text>
+                    </svg>
+                    <h1 class="logo-text">deep-codebase</h1>
+                </div>
+
+                <p class="tagline">
+                    Map <span class="highlight">APIs and technical capabilities</span> automatically
+                </p>
+
+                <p class="hero-description">
+                    Discover REST endpoints, GraphQL schemas, function signatures, and integration points.
+                    Build comprehensive capability inventories from code with intelligent API extraction.
+                </p>
+
+                <div class="cta-container">
+                    <a href="#install" class="cta-button cta-primary">Start API Discovery →</a>
+                    <a href="#features" class="cta-button cta-secondary">Explore Capabilities</a>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <svg class="scroll-arrow" viewBox="0 0 24 24">
+                    <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="section-header">
+                <h2 class="section-title">Comprehensive API Discovery</h2>
+                <p class="section-subtitle">Extract and map all technical capabilities from code</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="#00d9ff" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="8" fill="#00d9ff"/>
+                        <circle cx="70" cy="30" r="8" fill="#ff006e"/>
+                        <circle cx="50" cy="70" r="8" fill="#06ffa5"/>
+                        <line x1="30" y1="30" x2="50" y2="70" stroke="#8338ec" stroke-width="2"/>
+                        <line x1="70" y1="30" x2="50" y2="70" stroke="#8338ec" stroke-width="2"/>
+                    </svg>
+                    <h3 class="feature-title">Endpoint Discovery</h3>
+                    <p class="feature-description">
+                        Automatically detect REST APIs, GraphQL queries, RPC methods, and WebSocket handlers.
+                        Generate complete endpoint inventories with parameters and responses.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Auto-detect all endpoints</span>
+<span class="syntax-keyword">const</span> endpoints = <span class="syntax-keyword">await</span> <span class="syntax-function">discoverAPIs</span>(<span class="syntax-string">'./src'</span>);
+console.<span class="syntax-function">log</span>(endpoints.rest); <span class="syntax-comment">// [{path, method, params}]</span>
+console.<span class="syntax-function">log</span>(endpoints.graphql); <span class="syntax-comment">// [queries, mutations]</span></code>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" y="10" width="80" height="20" fill="#ff006e" opacity="0.7"/>
+                        <rect x="10" y="40" width="60" height="20" fill="#ffbe0b" opacity="0.7"/>
+                        <rect x="10" y="70" width="70" height="20" fill="#06ffa5" opacity="0.7"/>
+                    </svg>
+                    <h3 class="feature-title">Function Signature Extraction</h3>
+                    <p class="feature-description">
+                        Extract public function signatures, method definitions, and callable interfaces.
+                        Build API references from code structure.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Extract all signatures</span>
+<span class="syntax-keyword">const</span> signatures = <span class="syntax-keyword">await</span> <span class="syntax-function">extractSignatures</span>(<span class="syntax-string">'./api'</span>);
+signatures.<span class="syntax-function">forEach</span>(sig => {
+  console.<span class="syntax-function">log</span>(<span class="syntax-string">`${sig.name}(${sig.params}): ${sig.returns}`</span>);
+});</code>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 20 80 L 35 20 L 50 50 L 65 30 L 80 10"
+                              fill="none" stroke="#8338ec" stroke-width="3"/>
+                        <circle cx="35" cy="20" r="5" fill="#00d9ff"/>
+                        <circle cx="50" cy="50" r="5" fill="#ff006e"/>
+                        <circle cx="65" cy="30" r="5" fill="#ffbe0b"/>
+                    </svg>
+                    <h3 class="feature-title">Schema Detection</h3>
+                    <p class="feature-description">
+                        Identify data schemas, type definitions, interfaces, and contracts.
+                        Map data models and validation rules across your stack.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Detect all schemas</span>
+<span class="syntax-keyword">const</span> schemas = <span class="syntax-keyword">await</span> <span class="syntax-function">detectSchemas</span>(<span class="syntax-string">'./models'</span>);
+console.<span class="syntax-function">log</span>(schemas.types); <span class="syntax-comment">// TypeScript/Zod definitions</span>
+console.<span class="syntax-function">log</span>(schemas.validations); <span class="syntax-comment">// Validation rules</span></code>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="20" width="25" height="60" fill="#00d9ff" opacity="0.6"/>
+                        <rect x="55" y="30" width="25" height="50" fill="#ff006e" opacity="0.6"/>
+                        <path d="M 10 10 L 90 10 L 90 90 L 10 90 Z" fill="none" stroke="#06ffa5" stroke-width="2"/>
+                    </svg>
+                    <h3 class="feature-title">Integration Point Mapping</h3>
+                    <p class="feature-description">
+                        Find webhooks, event handlers, message queues, and external service connections.
+                        Document all integration touchpoints.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Map integration points</span>
+<span class="syntax-keyword">const</span> integrations = <span class="syntax-keyword">await</span> <span class="syntax-function">mapIntegrations</span>(<span class="syntax-string">'./src'</span>);
+console.<span class="syntax-function">log</span>(integrations.webhooks);
+console.<span class="syntax-function">log</span>(integrations.queues);
+console.<span class="syntax-function">log</span>(integrations.external);</code>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="50,10 90,35 75,80 25,80 10,35" fill="none" stroke="#ffbe0b" stroke-width="3"/>
+                        <text x="50" y="55" font-size="24" fill="#ffbe0b" text-anchor="middle"
+                              font-family="monospace">⚙</text>
+                    </svg>
+                    <h3 class="feature-title">Capability Matrix Generation</h3>
+                    <p class="feature-description">
+                        Build searchable matrices of technical capabilities.
+                        Organize by domain, service, module, or feature area.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Generate capability matrix</span>
+<span class="syntax-keyword">const</span> matrix = <span class="syntax-keyword">await</span> <span class="syntax-function">buildCapabilityMatrix</span>(<span class="syntax-string">'./src'</span>);
+matrix.<span class="syntax-function">byDomain</span>(<span class="syntax-string">'auth'</span>); <span class="syntax-comment">// All auth capabilities</span>
+matrix.<span class="syntax-function">byService</span>(<span class="syntax-string">'payments'</span>); <span class="syntax-comment">// Payment APIs</span></code>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="15" y="15" width="70" height="70" rx="10" fill="none" stroke="#06ffa5" stroke-width="3"/>
+                        <line x1="30" y1="35" x2="70" y2="35" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="30" y1="50" x2="60" y2="50" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="30" y1="65" x2="65" y2="65" stroke="#06ffa5" stroke-width="2"/>
+                    </svg>
+                    <h3 class="feature-title">API Evolution Tracking</h3>
+                    <p class="feature-description">
+                        Track API changes over time. Identify breaking changes, deprecated endpoints,
+                        and version differences.
+                    </p>
+                    <div class="code-example">
+                        <code><span class="syntax-comment">// Track API evolution</span>
+<span class="syntax-keyword">const</span> changes = <span class="syntax-keyword">await</span> <span class="syntax-function">trackAPIChanges</span>(<span class="syntax-string">'v1'</span>, <span class="syntax-string">'v2'</span>);
+console.<span class="syntax-function">log</span>(changes.breaking); <span class="syntax-comment">// Breaking changes</span>
+console.<span class="syntax-function">log</span>(changes.deprecated); <span class="syntax-comment">// Deprecated APIs</span></code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="install" class="install-section">
+            <div class="install-container">
+                <div class="section-header">
+                    <h2 class="section-title">Get Started</h2>
+                    <p class="section-subtitle">Install with a single command</p>
+                </div>
+
+                <div class="install-box">
+                    <div class="install-content">
+                        <p style="margin-bottom: 1rem; color: var(--text-dim);">NPM Installation</p>
+                        <div class="install-command">
+                            $ npm install -g deep-codebase
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-box">
+                    <div class="install-content">
+                        <p style="margin-bottom: 1rem; color: var(--text-dim);">Or use with npx</p>
+                        <div class="install-command">
+                            $ npx deep-codebase discover-apis ./src
+                        </div>
+                    </div>
+                </div>
+
+                <p style="margin-top: 3rem; color: var(--text-dim);">
+                    Works with REST, GraphQL, gRPC, WebSockets, and more.
+                    <br/>Start discovering APIs in under 30 seconds.
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Documentation</a>
+                    <a href="#" class="footer-link">GitHub</a>
+                    <a href="#" class="footer-link">Examples</a>
+                    <a href="#" class="footer-link">API Reference</a>
+                    <a href="#" class="footer-link">Community</a>
+                </div>
+                <p class="footer-text">
+                    © 2025 deep-codebase | Open Source MIT License
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add parallax effect to code fragments
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const fragments = document.querySelectorAll('.code-fragment');
+
+            fragments.forEach((fragment, index) => {
+                const speed = 0.5 + (index * 0.1);
+                fragment.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Interactive feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.feature-icon');
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+                icon.style.transition = 'transform 0.3s ease';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.feature-icon');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Codebase — Extract Components from Any Repository</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-background: #fafafa;
+            --color-text-primary: #0a0a0a;
+            --color-text-secondary: #525252;
+            --color-text-tertiary: #737373;
+            --color-accent: #2563eb;
+            --color-border: #e5e5e5;
+            --color-surface: #ffffff;
+
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text-primary);
+            background-color: var(--color-background);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--color-text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 4rem 8rem;
+        }
+
+        .hero-headline {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 2rem;
+            max-width: 1100px;
+        }
+
+        .hero-headline em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 900;
+            color: var(--color-accent);
+        }
+
+        .hero-subheadline {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--color-text-secondary);
+            max-width: 800px;
+            margin-bottom: 3rem;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--color-text-tertiary);
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .cta-primary {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-surface);
+            background-color: var(--color-text-primary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 4rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 4rem 3rem;
+        }
+
+        .feature {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            color: var(--color-text-primary);
+        }
+
+        .feature-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--color-text-secondary);
+        }
+
+        /* Code Block Section */
+        .code-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 4rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .code-headline {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 3rem;
+            max-width: 800px;
+        }
+
+        .code-block {
+            background-color: var(--color-text-primary);
+            color: #e5e5e5;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .code-block pre {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .code-comment {
+            color: #737373;
+        }
+
+        .code-command {
+            color: #60a5fa;
+        }
+
+        /* Use Cases Section */
+        .use-cases {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 4rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .use-cases-headline {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .use-cases-intro {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+            max-width: 750px;
+            margin-bottom: 4rem;
+        }
+
+        .use-cases-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .use-case {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .use-case-label {
+            font-family: var(--font-display);
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .use-case-description {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--color-text-secondary);
+        }
+
+        /* Footer CTA */
+        .footer-cta {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 8rem 4rem 6rem;
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+        }
+
+        .footer-cta-headline {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        .footer-cta-subtext {
+            font-size: 1.125rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-link {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-tertiary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--color-text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem 2rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .hero {
+                padding: 4rem 2rem 6rem;
+            }
+
+            .features {
+                padding: 4rem 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .code-section {
+                padding: 4rem 2rem;
+            }
+
+            .code-block {
+                padding: 1.5rem;
+            }
+
+            .use-cases {
+                padding: 4rem 2rem;
+            }
+
+            .use-case {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .footer-cta {
+                padding: 6rem 2rem 4rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">deep-codebase</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#install">Install</a></li>
+            <li><a href="https://github.com/yourusername/deep-codebase">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1 class="hero-headline">
+                Extract Components from Any Codebase—<em>Ready to Integrate</em>
+            </h1>
+            <p class="hero-subheadline">
+                For developers who need working code from open-source projects, not just documentation.
+            </p>
+            <p class="hero-description">
+                Point our CLI at any repository with your target feature and get extraction-ready code with full dependency chains, usage examples, and integration guidance.
+            </p>
+            <a href="#install" class="cta-primary">Get Started</a>
+        </section>
+
+        <section class="features" id="features">
+            <div class="section-label">Why Deep Codebase</div>
+            <div class="features-grid">
+                <div class="feature">
+                    <h2 class="feature-title">Complete Dependency Chains</h2>
+                    <p class="feature-description">
+                        Automatically maps all dependencies so you extract everything needed—no missing imports, no broken references, no manual hunting through files.
+                    </p>
+                </div>
+                <div class="feature">
+                    <h2 class="feature-title">Integration-Ready Format</h2>
+                    <p class="feature-description">
+                        Byte-accurate code with functions, classes, utilities, and configuration ready to integrate into your project. Copy, adapt, ship.
+                    </p>
+                </div>
+                <div class="feature">
+                    <h2 class="feature-title">Built for Extraction Workflows</h2>
+                    <p class="feature-description">
+                        Primary use case is extracting working implementations—authentication systems, data pipelines, UI components, rate limiters—from any codebase.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="code-section" id="install">
+            <h2 class="code-headline">
+                One command to extract production-grade code
+            </h2>
+            <div class="code-block">
+                <pre><span class="code-comment"># Install</span>
+<span class="code-command">pip install deep-codebase</span>
+
+<span class="code-comment"># Extract authentication system with full dependency chain</span>
+<span class="code-command">deep-codebase analyze https://github.com/fastapi/fastapi \
+  "Extract auth system" --include-snippets 12</span>
+
+<span class="code-comment"># Get integration-ready code with all imports, dependencies, and usage examples</span></pre>
+            </div>
+        </section>
+
+        <section class="use-cases">
+            <h2 class="use-cases-headline">Extract What You Need</h2>
+            <p class="use-cases-intro">
+                Stop rebuilding common functionality from scratch. Extract proven implementations from production codebases and adapt them to your project.
+            </p>
+            <div class="use-cases-list">
+                <div class="use-case">
+                    <div class="use-case-label">Authentication</div>
+                    <div class="use-case-description">
+                        Extract complete auth systems—JWT handlers, session management, OAuth flows—with all middleware, utilities, and security patterns intact.
+                    </div>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-label">Rate Limiting</div>
+                    <div class="use-case-description">
+                        Pull battle-tested rate limiters with Redis integration, token bucket algorithms, and distributed system patterns ready to integrate.
+                    </div>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-label">Data Pipelines</div>
+                    <div class="use-case-description">
+                        Extract ETL workflows, validation chains, transformation logic, and error handling from production data processing systems.
+                    </div>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-label">UI Components</div>
+                    <div class="use-case-description">
+                        Get complete component implementations—forms, modals, data tables—with styles, state management, and accessibility patterns included.
+                    </div>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-label">API Clients</div>
+                    <div class="use-case-description">
+                        Extract service integrations with retry logic, error handling, type definitions, and connection pooling from existing implementations.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="footer-cta">
+            <h2 class="footer-cta-headline">
+                Stop reading docs. Start extracting code.
+            </h2>
+            <p class="footer-cta-subtext">
+                Get integration-ready implementations from any open-source repository
+            </p>
+            <a href="#install" class="cta-primary">Install Now</a>
+
+            <div class="footer-links">
+                <a href="https://github.com/yourusername/deep-codebase" class="footer-link">GitHub</a>
+                <a href="#" class="footer-link">Documentation</a>
+                <a href="#" class="footer-link">Examples</a>
+                <a href="#" class="footer-link">License: MIT</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEEP-CODEBASE.SYS | Extract Components from Any Codebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Green Phosphor CRT */
+            --crt-green: #00ff41;
+            --crt-green-dim: #00aa2b;
+            --crt-green-bright: #39ff14;
+            --crt-bg: #0a0e0a;
+            --crt-bg-lighter: #0f140f;
+            --crt-shadow: rgba(0, 255, 65, 0.3);
+            --crt-glow: rgba(0, 255, 65, 0.6);
+
+            /* Amber alternative */
+            --crt-amber: #ffb000;
+            --crt-amber-dim: #cc8800;
+
+            /* Cyberpunk accents */
+            --cyber-pink: #ff006e;
+            --cyber-blue: #00d9ff;
+            --cyber-purple: #b700ff;
+        }
+
+        @font-face {
+            font-family: 'VT323';
+            font-style: normal;
+            font-weight: 400;
+            src: url('https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2hsYHpT2dkNE.woff2') format('woff2');
+        }
+
+        body {
+            font-family: 'VT323', 'Courier New', monospace;
+            background: var(--crt-bg);
+            color: var(--crt-green);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CRT Screen Effects */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 1000;
+            animation: flicker 0.15s infinite;
+        }
+
+        /* Scanlines */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 65, 0.03),
+                    rgba(0, 255, 65, 0.03) 1px,
+                    transparent 1px,
+                    transparent 3px
+                );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.98; }
+            50% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        /* Screen curvature effect */
+        .screen-container {
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            filter: contrast(1.1) brightness(1.05);
+        }
+
+        /* Glow effect for text */
+        .glow {
+            text-shadow:
+                0 0 2px var(--crt-green),
+                0 0 5px var(--crt-green),
+                0 0 10px var(--crt-shadow);
+        }
+
+        .glow-bright {
+            text-shadow:
+                0 0 3px var(--crt-green-bright),
+                0 0 7px var(--crt-green-bright),
+                0 0 15px var(--crt-glow),
+                0 0 25px var(--crt-shadow);
+        }
+
+        .glow-pink {
+            color: var(--cyber-pink);
+            text-shadow:
+                0 0 3px var(--cyber-pink),
+                0 0 7px var(--cyber-pink),
+                0 0 15px rgba(255, 0, 110, 0.6);
+        }
+
+        .glow-blue {
+            color: var(--cyber-blue);
+            text-shadow:
+                0 0 3px var(--cyber-blue),
+                0 0 7px var(--cyber-blue),
+                0 0 15px rgba(0, 217, 255, 0.6);
+        }
+
+        /* Navigation - Terminal Menu */
+        nav {
+            background: var(--crt-bg-lighter);
+            border-bottom: 2px solid var(--crt-green);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 0 20px var(--crt-shadow);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        .logo-bracket {
+            color: var(--cyber-pink);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-size: 1.4rem;
+        }
+
+        .nav-menu a {
+            color: var(--crt-green);
+            text-decoration: none;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-menu a::before {
+            content: "> ";
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--crt-green-bright);
+        }
+
+        .nav-menu a:hover::before {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .system-status {
+            font-size: 1.2rem;
+            color: var(--crt-green-dim);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        h1 {
+            font-size: 4rem;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            color: var(--crt-green-dim);
+            margin-bottom: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .tagline {
+            font-size: 1.6rem;
+            color: var(--crt-green);
+            max-width: 900px;
+            margin: 0 auto 3rem;
+            line-height: 1.5;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            background: #000;
+            border: 3px solid var(--crt-green);
+            border-radius: 0;
+            max-width: 1100px;
+            margin: 0 auto 3rem;
+            box-shadow:
+                0 0 30px var(--crt-glow),
+                inset 0 0 50px rgba(0, 255, 65, 0.05);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: var(--crt-bg-lighter);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--crt-green);
+            font-size: 1.3rem;
+        }
+
+        .terminal-led {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .led-active {
+            background: var(--crt-green-bright);
+            box-shadow: 0 0 10px var(--crt-green-bright);
+        }
+
+        .led-standby {
+            background: var(--cyber-pink);
+            box-shadow: 0 0 10px var(--cyber-pink);
+        }
+
+        .led-inactive {
+            background: var(--crt-green-dim);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .terminal-body {
+            padding: 2rem;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            min-height: 400px;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .prompt {
+            color: var(--cyber-pink);
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .command {
+            color: var(--crt-green-bright);
+        }
+
+        .output {
+            color: var(--crt-green);
+            margin-left: 2rem;
+        }
+
+        .output-success {
+            color: var(--crt-green-bright);
+        }
+
+        .output-highlight {
+            color: var(--cyber-blue);
+        }
+
+        .output-pink {
+            color: var(--cyber-pink);
+        }
+
+        .tree-char {
+            color: var(--crt-green-dim);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 1.2em;
+            background: var(--crt-green-bright);
+            animation: blink 1s infinite;
+            margin-left: 4px;
+            box-shadow: 0 0 8px var(--crt-green-bright);
+        }
+
+        /* CTA Buttons */
+        .cta-group {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 3rem 0;
+        }
+
+        .btn {
+            padding: 1rem 3rem;
+            font-size: 1.6rem;
+            font-family: 'VT323', monospace;
+            background: transparent;
+            border: 2px solid var(--crt-green);
+            color: var(--crt-green);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .btn::before {
+            content: "[";
+            color: var(--cyber-pink);
+        }
+
+        .btn::after {
+            content: "]";
+            color: var(--cyber-pink);
+        }
+
+        .btn:hover {
+            background: var(--crt-green);
+            color: var(--crt-bg);
+            box-shadow:
+                0 0 20px var(--crt-glow),
+                inset 0 0 10px rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            border-color: var(--cyber-blue);
+            color: var(--cyber-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cyber-blue);
+            color: var(--crt-bg);
+            box-shadow:
+                0 0 20px rgba(0, 217, 255, 0.6),
+                inset 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Problem Section */
+        .problem-section {
+            background: var(--crt-bg-lighter);
+            border: 2px solid var(--crt-green);
+            padding: 3rem 2rem;
+            margin: 4rem 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 30px var(--crt-shadow);
+        }
+
+        .section-header {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .section-header::before {
+            content: ">>> ";
+            color: var(--cyber-pink);
+        }
+
+        .problem-text {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .problem-text strong {
+            color: var(--crt-green-bright);
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--crt-bg-lighter);
+            border: 2px solid var(--crt-green-dim);
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(0, 255, 65, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--crt-green-bright);
+            box-shadow: 0 0 25px var(--crt-shadow);
+            transform: translateY(-5px);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .feature-card p {
+            font-size: 1.4rem;
+            color: var(--crt-green-dim);
+            line-height: 1.6;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            margin-top: 3rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            font-size: 3rem;
+            color: var(--cyber-pink);
+            min-width: 80px;
+            text-align: center;
+            border: 2px solid var(--cyber-pink);
+            padding: 1rem;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
+        }
+
+        .step-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .step-content p {
+            font-size: 1.5rem;
+            color: var(--crt-green-dim);
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #000;
+            border: 2px solid var(--crt-green-dim);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            overflow-x: auto;
+        }
+
+        .code-example .cmd { color: var(--crt-green-bright); }
+        .code-example .arg { color: var(--cyber-blue); }
+        .code-example .str { color: var(--cyber-pink); }
+        .code-example .flag { color: var(--crt-green); }
+
+        /* Footer */
+        footer {
+            background: var(--crt-bg-lighter);
+            border-top: 2px solid var(--crt-green);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 1.4rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--crt-green);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--crt-green-bright);
+        }
+
+        .footer-links a::before {
+            content: "$ ";
+            color: var(--cyber-pink);
+        }
+
+        .copyright {
+            color: var(--crt-green-dim);
+            font-size: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        /* ASCII Art Decorations */
+        .ascii-decoration {
+            font-size: 0.8rem;
+            color: var(--crt-green-dim);
+            opacity: 0.3;
+            line-height: 1;
+            white-space: pre;
+            text-align: center;
+            margin: 2rem 0;
+            user-select: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.5rem;
+            }
+
+            .tagline {
+                font-size: 1.3rem;
+            }
+
+            .terminal-body {
+                font-size: 1.2rem;
+                padding: 1.5rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step-number {
+                width: 100%;
+            }
+
+            .cta-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to bottom, transparent, var(--crt-green-bright), transparent);
+            box-shadow: 0 0 10px var(--crt-green-bright);
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+            z-index: 998;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="scan-line"></div>
+    <div class="screen-container">
+
+        <!-- Navigation -->
+        <nav>
+            <div class="nav-container">
+                <div class="logo glow-bright">
+                    <span class="logo-bracket glow-pink">[</span>DEEP-CODEBASE.SYS<span class="logo-bracket glow-pink">]</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#features" class="glow">FEATURES</a></li>
+                    <li><a href="#how" class="glow">HOW_IT_WORKS</a></li>
+                    <li><a href="#install" class="glow">INSTALL</a></li>
+                    <li><a href="#" class="glow">GITHUB</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="system-status">
+                SYSTEM STATUS: <span class="glow-bright">ONLINE</span> <span class="blink">█</span>
+            </div>
+
+            <h1 class="glow-bright">
+                EXTRACT COMPONENTS<br>
+                FROM ANY CODEBASE—<br>
+                <span class="glow-pink">READY TO INTEGRATE</span>
+            </h1>
+
+            <p class="subtitle glow">
+                &gt; FOR DEVELOPERS WHO NEED WORKING CODE, NOT JUST DOCUMENTATION_
+            </p>
+
+            <!-- Terminal Demo -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-led led-active"></div>
+                    <div class="terminal-led led-standby"></div>
+                    <div class="terminal-led led-inactive"></div>
+                    <div class="terminal-title glow">DEEP-CODEBASE v1.0.0 — TERMINAL</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt glow-pink">$</span>
+                        <span class="command glow">deep-codebase analyze https://github.com/user/repo "authentication system"</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-highlight glow-blue">INITIALIZING CODEBASE ANALYSIS...</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-success glow">✓ SCANNING REPOSITORY STRUCTURE</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-success glow">✓ PARSING 247 FILES WITH TREE-SITTER</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-success glow">✓ ANALYZING CALL GRAPH RELATIONSHIPS</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-success glow">✓ COMPUTING TF-IDF RELEVANCE SCORES</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-highlight glow-blue">✓ FOUND 12 RELEVANT FUNCTIONS ACROSS 8 FILES</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output output-success glow">✓ EXTRACTED COMPLETE DEPENDENCY CHAIN</span>
+                    </div>
+                    <div class="terminal-line" style="margin-top: 1rem;">
+                        <span class="output output-pink glow-pink">EXTRACTION COMPLETE — OUTPUT DIRECTORY:</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow">./extracted/auth_system/</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">├──</span> middleware/</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">│   ├──</span> auth.ts <span style="color: var(--crt-green-dim);">[JWT validation, session handling]</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">│   └──</span> permissions.ts <span style="color: var(--crt-green-dim);">[RBAC logic]</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">├──</span> utils/</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">│   ├──</span> token.ts <span style="color: var(--crt-green-dim);">[JWT generation/verification]</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">│   └──</span> crypto.ts <span style="color: var(--crt-green-dim);">[Password hashing utilities]</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">├──</span> types/</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">│   └──</span> auth.d.ts <span style="color: var(--crt-green-dim);">[TypeScript definitions]</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output glow"><span class="tree-char">└──</span> README.md <span style="color: var(--crt-green-dim);">[Integration guide]</span></span>
+                    </div>
+                    <div class="terminal-line" style="margin-top: 1.5rem;">
+                        <span class="prompt glow-pink">$</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="cta-group">
+                <a href="#install" class="btn glow">
+                    <span>INSTALL NOW</span>
+                    <span class="glow-pink">→</span>
+                </a>
+                <a href="#" class="btn btn-secondary glow-blue">
+                    <span>VIEW ON GITHUB</span>
+                    <span>↗</span>
+                </a>
+            </div>
+
+            <div class="ascii-decoration">
+╔═══════════════════════════════════════════════════════════════════╗
+║  POWERED BY CLAUDE SONNET 4 + TREE-SITTER STRUCTURAL ANALYSIS   ║
+╚═══════════════════════════════════════════════════════════════════╝
+            </div>
+        </section>
+
+        <!-- Problem Section -->
+        <section class="problem-section">
+            <h2 class="section-header glow-bright">THE PROBLEM</h2>
+            <div class="problem-text glow">
+                You know the drill: need their authentication middleware for your project,
+                <strong>spend hours digging through files</strong> trying to extract the implementation
+                and dependencies. What should be a quick extraction turns into
+                <strong>reverse-engineering their entire architecture.</strong>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0; font-size: 3rem; color: var(--cyber-pink);">
+                ↓
+            </div>
+
+            <h2 class="section-header glow-blue">THE SOLUTION</h2>
+            <div class="problem-text glow">
+                <strong>Deep-codebase finds, extracts, and prepares components for integration—automatically.</strong>
+                Point our CLI at any repository with your target feature ("authentication system", "data pipeline", "rate limiter")
+                and get extraction-ready code with <span class="glow-bright">full dependency chains, usage examples, and integration guidance.</span>
+                Combines <span class="glow-pink">Claude Sonnet 4 AI analysis</span> with <span class="glow-blue">Tree-sitter structural parsing.</span>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section" id="features">
+            <h2 class="section-header glow-bright">SYSTEM CAPABILITIES</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon glow-pink">▸▸▸</div>
+                    <h3 class="glow">AI-POWERED ANALYSIS</h3>
+                    <p>Claude Sonnet 4 understands natural language queries and codebase context. Ask "How does authentication work?" and get the complete system extracted.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon glow-blue">◆◆◆</div>
+                    <h3 class="glow">TREE-SITTER PARSING</h3>
+                    <p>Industrial-grade static analysis with full React/TSX support. Understands modern JavaScript and TypeScript codebases natively.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon glow-pink">►►►</div>
+                    <h3 class="glow">DEPENDENCY MAPPING</h3>
+                    <p>Automatically traces and extracts all dependencies, imports, and related functions. Get complete, working code with zero manual hunting.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon glow-blue">≡≡≡</div>
+                    <h3 class="glow">TF-IDF + CALL GRAPH</h3>
+                    <p>Advanced relevance scoring combines TF-IDF text analysis with call graph relationships to find exactly what you need, not just keyword matches.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon glow-pink">◊◊◊</div>
+                    <h3 class="glow">SMART EXTRACTION</h3>
+                    <p>Context-aware extraction maintains code structure and relationships. Output is organized, documented, and ready to integrate.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon glow-blue">◘◘◘</div>
+                    <h3 class="glow">ASYNC ARCHITECTURE</h3>
+                    <p>Built on asyncio for blazing-fast performance. Analyze large repositories in seconds, not minutes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works" id="how">
+            <h2 class="section-header glow-bright">EXECUTION SEQUENCE</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number glow-pink">01</div>
+                    <div class="step-content">
+                        <h3 class="glow">INSTALL VIA PIP</h3>
+                        <p>Single command installation. No configuration required.</p>
+                        <div class="code-example glow">
+<span class="cmd">pip</span> <span class="arg">install</span> <span class="str">deep-codebase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number glow-pink">02</div>
+                    <div class="step-content">
+                        <h3 class="glow">ASK A QUESTION</h3>
+                        <p>Point at any repository and describe what you need in natural language.</p>
+                        <div class="code-example glow">
+<span class="cmd">deep-codebase</span> <span class="arg">analyze</span> <span class="str">&lt;repo-url&gt;</span> <span class="str">"How does authentication work?"</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number glow-pink">03</div>
+                    <div class="step-content">
+                        <h3 class="glow">EXTRACT COMPONENTS</h3>
+                        <p>Get extraction-ready code with dependencies, usage examples, and integration guidance.</p>
+                        <div class="code-example glow">
+<span class="cmd">deep-codebase</span> <span class="arg">analyze</span> <span class="str">&lt;repo-url&gt;</span> <span class="str">"Extract rate limiter"</span> <span class="flag">--include-snippets</span> <span class="arg">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="ascii-decoration">
+╔═══════════════════════════════════════════════════════════════════╗
+║                    EXTRACTION COMPLETE                           ║
+║              READY FOR INTEGRATION — STATUS: OK                  ║
+╚═══════════════════════════════════════════════════════════════════╝
+        </div>
+
+        <!-- Footer -->
+        <footer id="install">
+            <div class="footer-content">
+                <div class="logo glow-bright" style="font-size: 2.5rem; margin-bottom: 2rem;">
+                    <span class="logo-bracket glow-pink">[</span>DEEP-CODEBASE.SYS<span class="logo-bracket glow-pink">]</span>
+                </div>
+
+                <ul class="footer-links">
+                    <li><a href="#" class="glow">GITHUB</a></li>
+                    <li><a href="#" class="glow">DOCUMENTATION</a></li>
+                    <li><a href="#" class="glow">PYPI</a></li>
+                    <li><a href="#" class="glow">LICENSE</a></li>
+                </ul>
+
+                <div class="copyright">
+                    © 2025 DEEP-CODEBASE — OPEN SOURCE MIT LICENSE<br>
+                    <span style="font-size: 1rem; opacity: 0.6;">SYSTEM v1.0.0 — BUILD 20250112</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Terminal typing effect
+        const terminalLines = document.querySelectorAll('.terminal-line');
+        terminalLines.forEach((line, index) => {
+            line.style.opacity = '0';
+            setTimeout(() => {
+                line.style.transition = 'opacity 0.2s';
+                line.style.opacity = '1';
+            }, index * 100);
+        });
+
+        // Random flicker effect for authenticity
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                document.body.style.opacity = '0.97';
+                setTimeout(() => { document.body.style.opacity = '1'; }, 50);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

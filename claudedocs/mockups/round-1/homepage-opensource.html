@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep-Codebase - Extract Components from Any Codebase—Ready to Integrate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-canvas-default: #0d1117;
+            --color-canvas-subtle: #161b22;
+            --color-border-default: #30363d;
+            --color-border-muted: #21262d;
+            --color-fg-default: #e6edf3;
+            --color-fg-muted: #7d8590;
+            --color-fg-subtle: #6e7681;
+            --color-accent-fg: #2f81f7;
+            --color-accent-emphasis: #1f6feb;
+            --color-success-emphasis: #238636;
+            --color-attention-emphasis: #9e6a03;
+            --color-danger-emphasis: #da3633;
+            --color-header-bg: rgba(13, 17, 23, 0.95);
+            --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-canvas-default);
+            color: var(--color-fg-default);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: var(--color-header-bg);
+            border-bottom: 1px solid var(--color-border-default);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--color-fg-default);
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--color-fg-default);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--color-accent-fg);
+        }
+
+        .btn-github {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            color: var(--color-fg-default);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-github:hover {
+            background: var(--color-border-default);
+            border-color: var(--color-fg-subtle);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero .tagline {
+            font-size: 20px;
+            color: var(--color-fg-muted);
+            margin-bottom: 48px;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--color-fg-muted);
+            gap: 6px;
+        }
+
+        .badge img {
+            height: 16px;
+        }
+
+        /* Problem/Solution */
+        .problem-solution {
+            max-width: 900px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .card {
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card p {
+            color: var(--color-fg-muted);
+            line-height: 1.7;
+        }
+
+        .icon-problem {
+            color: var(--color-danger-emphasis);
+        }
+
+        .icon-solution {
+            color: var(--color-success-emphasis);
+        }
+
+        /* Installation */
+        .installation {
+            max-width: 1280px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-block {
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 24px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block code {
+            color: var(--color-fg-default);
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: var(--color-fg-subtle);
+        }
+
+        .code-command {
+            color: #79c0ff;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--color-border-default);
+            border: 1px solid var(--color-border-muted);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--color-fg-default);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--color-border-muted);
+        }
+
+        /* Features */
+        .features {
+            max-width: 1280px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-border-muted);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-accent-emphasis);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: var(--color-fg-default);
+            font-size: 20px;
+        }
+
+        .feature-card h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--color-fg-muted);
+            font-size: 14px;
+        }
+
+        /* Use Cases */
+        .use-cases {
+            max-width: 1280px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .use-cases-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .use-case {
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .use-case-icon {
+            font-size: 24px;
+        }
+
+        .use-case h4 {
+            font-size: 15px;
+            color: var(--color-fg-default);
+        }
+
+        /* CTA Section */
+        .cta {
+            max-width: 900px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .cta-card {
+            background: linear-gradient(135deg, var(--color-canvas-subtle) 0%, #1a1f26 100%);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 48px 32px;
+        }
+
+        .cta h2 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--color-fg-muted);
+            margin-bottom: 32px;
+            font-size: 18px;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--color-success-emphasis);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2ea043;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--color-border-default);
+            padding: 48px 0;
+            margin-top: 80px;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            margin-bottom: 16px;
+            color: var(--color-fg-default);
+        }
+
+        .footer-section a {
+            display: block;
+            color: var(--color-fg-muted);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--color-accent-fg);
+        }
+
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 32px auto 0;
+            padding: 24px 24px 0;
+            border-top: 1px solid var(--color-border-default);
+            text-align: center;
+            color: var(--color-fg-subtle);
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero .tagline {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Syntax Highlighting */
+        .token-comment { color: #8b949e; }
+        .token-keyword { color: #ff7b72; }
+        .token-string { color: #a5d6ff; }
+        .token-function { color: #d2a8ff; }
+        .token-number { color: #79c0ff; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="6" fill="#238636"/>
+                    <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M16 8V16M8 12L16 16L24 12" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <span>deep-codebase</span>
+            </a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#docs">Documentation</a>
+                <a href="#examples">Examples</a>
+                <a href="#community">Community</a>
+                <a href="https://github.com/yourusername/deep-codebase" class="btn-github">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    Star on GitHub
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero fade-in">
+        <h1>Extract Components from Any Codebase<br/>—Ready to Integrate</h1>
+        <p class="tagline">For developers who need working code from open-source projects, not just documentation</p>
+
+        <div class="badge-container">
+            <span class="badge">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                Open Source
+            </span>
+            <span class="badge">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.75.75 0 1 1 1.06-1.06L5.5 9.94l4.97-4.97a.75.75 0 0 1 1.06 1.06Z"/></svg>
+                MIT License
+            </span>
+            <span class="badge">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25a.75.75 0 0 0-1.5 0v2.992l-2.028.812a.75.75 0 0 0 .556 1.392l2.5-1a.75.75 0 0 0 .472-.693V4.75Z"/></svg>
+                Python 3.8+
+            </span>
+            <span class="badge">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.75 0A1.75 1.75 0 0 0 3 1.75v12.5c0 .966.784 1.75 1.75 1.75h6.5A1.75 1.75 0 0 0 13 14.25V4.664a1.75 1.75 0 0 0-.513-1.237l-2.914-2.914A1.75 1.75 0 0 0 8.336 0Zm0 1.5h3.59a.25.25 0 0 1 .177.073l2.914 2.914a.25.25 0 0 1 .073.177v9.586a.25.25 0 0 1-.25.25h-6.5a.25.25 0 0 1-.25-.25V1.75a.25.25 0 0 1 .25-.25Z"/></svg>
+                CLI Tool
+            </span>
+        </div>
+    </section>
+
+    <!-- Problem/Solution -->
+    <section class="problem-solution">
+        <div class="card">
+            <h3>
+                <svg class="icon-problem" width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M4.47.22A.75.75 0 0 1 5 0h6a.75.75 0 0 1 .53.22l4.25 4.25c.141.14.22.331.22.53v6a.75.75 0 0 1-.22.53l-4.25 4.25A.75.75 0 0 1 11 16H5a.75.75 0 0 1-.53-.22L.22 11.53A.75.75 0 0 1 0 11V5a.75.75 0 0 1 .22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+                </svg>
+                The Problem
+            </h3>
+            <p>You find the perfect open-source implementation—their authentication middleware, data pipeline, or UI component. But now you need to extract it. You spend hours digging through files, tracing dependencies, and trying to figure out what code you actually need to make it work in your project.</p>
+        </div>
+
+        <div class="card">
+            <h3>
+                <svg class="icon-solution" width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
+                </svg>
+                The Solution
+            </h3>
+            <p>Deep-codebase finds, extracts, and prepares components for integration—automatically. It understands your intent, maps dependencies, and delivers integration-ready code with complete context. No more manual hunting. Just working code, ready to use.</p>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section class="installation">
+        <h2 class="section-title">
+            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M11.28 6.78a.75.75 0 0 0-1.06-1.06L7.25 8.69 5.78 7.22a.75.75 0 0 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l3.5-3.5Z"/>
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0Zm-1.5 0a6.5 6.5 0 1 0-13 0 6.5 6.5 0 0 0 13 0Z"/>
+            </svg>
+            Getting Started
+        </h2>
+
+        <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code><span class="token-comment"># Install via pip</span>
+<span class="token-keyword">pip</span> install deep-codebase
+
+<span class="token-comment"># Analyze a repository with a natural language query</span>
+<span class="token-keyword">deep-codebase</span> analyze &lt;repository-url&gt; <span class="token-string">"How does authentication work?"</span>
+
+<span class="token-comment"># Extract components with code snippets</span>
+<span class="token-keyword">deep-codebase</span> analyze &lt;repository-url&gt; <span class="token-string">"Extract auth system"</span> --include-snippets <span class="token-number">12</span></code>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2 class="section-title">
+            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM6.5 8a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"/>
+                <path d="M1.643 3.143 8 .5l6.357 2.643a.75.75 0 0 1 .475.652v5.36a4.75 4.75 0 0 1-2.715 4.287L8 16l-4.117-2.558A4.75 4.75 0 0 1 1.168 9.155V3.795a.75.75 0 0 1 .475-.652Zm.832 1.441v4.571a3.25 3.25 0 0 0 1.858 2.933L8 13.827l3.667-1.739a3.25 3.25 0 0 0 1.858-2.933V4.584L8 2.291Z"/>
+            </svg>
+            Key Features
+        </h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h4>Intelligent Code Selection</h4>
+                <p>TF-IDF + call graph analysis identifies the most relevant code based on your query, not just keyword matching.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h4>Smart Query Understanding</h4>
+                <p>Intent detection understands whether you want code snippets, architecture explanations, or complete component extraction.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h4>Complete Dependency Mapping</h4>
+                <p>Automatically traces all dependencies so you get everything you need—no missing imports or broken references.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h4>Tree-sitter Static Analysis</h4>
+                <p>Robust parsing for React/TSX with full support for modern JavaScript and TypeScript patterns.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h4>Contextual Function Naming</h4>
+                <p>Provides clear, descriptive names for extracted functions based on their role in the codebase.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h4>Integration-Ready Output</h4>
+                <p>Code comes with complete context, imports, and usage examples—ready to integrate into your project.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h4>Async Performance</h4>
+                <p>Built on asyncio architecture for fast, efficient repository analysis and code extraction.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h4>Multi-Format Support</h4>
+                <p>Analyzes Python, JavaScript, TypeScript, React, and more with language-specific optimizations.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-cases">
+        <h2 class="section-title">
+            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+            </svg>
+            Use Cases
+        </h2>
+
+        <div class="use-cases-list">
+            <div class="use-case">
+                <span class="use-case-icon">🔐</span>
+                <h4>Extract Authentication Systems</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">⚙️</span>
+                <h4>Extract Data Pipelines</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🎨</span>
+                <h4>Extract UI Components</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">⏱️</span>
+                <h4>Extract Rate Limiters</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">📊</span>
+                <h4>Extract Analytics Logic</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🔄</span>
+                <h4>Extract State Management</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🌐</span>
+                <h4>Extract API Integrations</h4>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🛡️</span>
+                <h4>Extract Security Middleware</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-card">
+            <h2>Ready to Start Extracting?</h2>
+            <p>Join the community of developers who extract and integrate code components efficiently</p>
+            <a href="https://github.com/yourusername/deep-codebase" class="btn-primary">Get Started →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#examples">Examples</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#changelog">Changelog</a>
+            </div>
+            <div class="footer-section">
+                <h4>Documentation</h4>
+                <a href="#getting-started">Getting Started</a>
+                <a href="#api-reference">API Reference</a>
+                <a href="#guides">Guides</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <a href="https://github.com/yourusername/deep-codebase">GitHub</a>
+                <a href="https://discord.gg/deep-codebase">Discord</a>
+                <a href="https://twitter.com/deepcodebase">Twitter</a>
+                <a href="#contributors">Contributors</a>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="#blog">Blog</a>
+                <a href="#tutorials">Tutorials</a>
+                <a href="#showcase">Showcase</a>
+                <a href="#support">Support</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 Deep-Codebase. Released under the MIT License. Built with ❤️ by the open-source community.
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            const code = codeBlock.querySelector('code').textContent;
+
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .use-case, .card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

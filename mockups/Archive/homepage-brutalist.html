@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEEP-CODEBASE | EXTRACT · INTEGRATE · DEPLOY</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray: #808080;
+            --accent: #00FF00;
+            --red: #FF0000;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.3;
+            overflow-x: hidden;
+        }
+
+        /* Brutal Typography */
+        h1, h2, h3 {
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navigation - Fixed Block */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            color: var(--black);
+            padding: 2rem;
+            z-index: 1000;
+            border-bottom: 8px solid var(--black);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 700;
+            border-bottom: 3px solid transparent;
+            padding-bottom: 2px;
+            transition: border-color 0.1s;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        /* Hero - Brutal Impact */
+        .hero {
+            margin-top: 120px;
+            padding: 4rem 2rem;
+            background: var(--white);
+            color: var(--black);
+            border: 8px solid var(--black);
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            word-break: break-word;
+        }
+
+        .hero-highlight {
+            display: block;
+            background: var(--black);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            width: fit-content;
+        }
+
+        .hero-subtext {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            margin: 2rem 0;
+            max-width: 60ch;
+            border-left: 8px solid var(--black);
+            padding-left: 1rem;
+        }
+
+        /* Terminal Block */
+        .terminal-block {
+            background: var(--black);
+            color: var(--accent);
+            padding: 2rem;
+            border: 4px solid var(--white);
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            max-width: 900px;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt {
+            color: var(--white);
+        }
+
+        .output {
+            color: var(--gray);
+            margin-left: 2ch;
+        }
+
+        /* CTA Buttons - Brutal Blocks */
+        .cta-group {
+            display: flex;
+            gap: 0;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 2rem 3rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-decoration: none;
+            border: 4px solid var(--black);
+            background: var(--black);
+            color: var(--white);
+            text-transform: uppercase;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--black);
+            border-color: var(--black);
+        }
+
+        .btn-primary:hover {
+            background: var(--black);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Problem Section - Red Alert */
+        .problem-section {
+            background: var(--red);
+            color: var(--white);
+            padding: 6rem 2rem;
+            border: 8px solid var(--black);
+            border-left: none;
+            border-right: none;
+        }
+
+        .problem-section h2 {
+            font-size: clamp(2rem, 6vw, 5rem);
+            margin-bottom: 2rem;
+        }
+
+        .problem-content {
+            max-width: 80ch;
+            font-size: clamp(1.2rem, 2vw, 2rem);
+            line-height: 1.4;
+        }
+
+        /* Features - Grid Brutalism */
+        .features {
+            background: var(--black);
+            padding: 6rem 2rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 6vw, 6rem);
+            margin-bottom: 4rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-block {
+            background: var(--white);
+            color: var(--black);
+            padding: 3rem;
+            border: 4px solid var(--black);
+            transition: all 0.2s;
+        }
+
+        .feature-block:nth-child(odd) {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .feature-block:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 8px 8px 0 var(--accent);
+        }
+
+        .feature-block h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 4px solid currentColor;
+            padding-bottom: 0.5rem;
+        }
+
+        .feature-block p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* Use Cases - Stacked Blocks */
+        .use-cases {
+            background: var(--white);
+            color: var(--black);
+            padding: 6rem 2rem;
+            border: 8px solid var(--black);
+            border-left: none;
+            border-right: none;
+        }
+
+        .use-case-stack {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .use-case {
+            background: var(--black);
+            color: var(--white);
+            padding: 2rem;
+            border: 4px solid var(--black);
+            position: relative;
+        }
+
+        .use-case:nth-child(even) {
+            background: var(--white);
+            color: var(--black);
+            margin-left: 4rem;
+        }
+
+        .use-case:nth-child(odd) {
+            margin-right: 4rem;
+        }
+
+        .use-case-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 900;
+        }
+
+        .use-case-arrow {
+            font-size: 3rem;
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Getting Started - Command Line */
+        .getting-started {
+            background: var(--black);
+            padding: 6rem 2rem;
+        }
+
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            margin-bottom: 4rem;
+        }
+
+        .step-number {
+            font-size: 8rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .step-content {
+            background: var(--white);
+            color: var(--black);
+            padding: 2rem;
+            border: 4px solid var(--accent);
+        }
+
+        .step-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-box {
+            background: var(--black);
+            color: var(--accent);
+            padding: 1.5rem;
+            border: 4px solid var(--accent);
+            font-size: 1.2rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        /* Footer - Minimal Block */
+        footer {
+            background: var(--white);
+            color: var(--black);
+            padding: 4rem 2rem;
+            border-top: 8px solid var(--black);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-block h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 4px solid var(--black);
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 700;
+            border-bottom: 2px solid transparent;
+        }
+
+        .footer-links a:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        /* Geometric Decoration */
+        .geometric-accent {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border: 8px solid var(--accent);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .geo-1 {
+            top: 30%;
+            right: -100px;
+            transform: rotate(45deg);
+        }
+
+        .geo-2 {
+            bottom: 20%;
+            left: -100px;
+            transform: rotate(15deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                margin-top: 80px;
+                padding: 2rem 1rem;
+            }
+
+            .btn {
+                padding: 1.5rem 2rem;
+                font-size: 1.2rem;
+            }
+
+            .use-case:nth-child(even),
+            .use-case:nth-child(odd) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .geometric-accent {
+                display: none;
+            }
+        }
+
+        /* Animations - Sharp & Quick */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .hero h1 {
+            animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .terminal-block {
+            animation: popIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+    </style>
+</head>
+<body>
+    <!-- Geometric Accents -->
+    <div class="geometric-accent geo-1"></div>
+    <div class="geometric-accent geo-2"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">DEEP-CODEBASE</div>
+            <ul class="nav-links">
+                <li><a href="#features">FEATURES</a></li>
+                <li><a href="#use-cases">USE CASES</a></li>
+                <li><a href="#start">GET STARTED</a></li>
+                <li><a href="https://github.com">GITHUB</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>
+            EXTRACT<br>
+            COMPONENTS<br>
+            <span class="hero-highlight">FROM ANY CODEBASE</span>
+        </h1>
+
+        <p class="hero-subtext">
+            FOR DEVELOPERS WHO NEED WORKING CODE FROM OPEN-SOURCE PROJECTS, NOT JUST DOCUMENTATION.
+        </p>
+
+        <div class="terminal-block">
+            <div class="terminal-line">
+                <span class="prompt">$</span> deep-codebase analyze https://github.com/user/repo "Extract auth system"
+            </div>
+            <div class="terminal-line output">
+                🔍 ANALYZING REPOSITORY...
+            </div>
+            <div class="terminal-line output">
+                ✓ FOUND 12 FUNCTIONS ACROSS 8 FILES
+            </div>
+            <div class="terminal-line output">
+                ✓ MAPPED COMPLETE DEPENDENCY TREE
+            </div>
+            <div class="terminal-line output">
+                ✓ EXTRACTED AUTHENTICATION SYSTEM
+            </div>
+            <div class="terminal-line output">
+                📦 OUTPUT: ./extracted/auth_system/
+            </div>
+        </div>
+
+        <div class="cta-group">
+            <a href="#start" class="btn btn-primary">START NOW</a>
+            <a href="https://github.com" class="btn">VIEW SOURCE</a>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <h2>THE PROBLEM:</h2>
+        <p class="problem-content">
+            YOU FIND THE PERFECT AUTHENTICATION MIDDLEWARE IN AN OPEN-SOURCE PROJECT.
+            NOW YOU SPEND HOURS DIGGING THROUGH FILES, TRACING IMPORTS, FINDING DEPENDENCIES.
+            WHAT SHOULD BE A QUICK EXTRACTION TURNS INTO REVERSE-ENGINEERING THEIR ENTIRE ARCHITECTURE.
+        </p>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <h2 class="section-title">HOW IT WORKS</h2>
+        <div class="features-grid">
+            <div class="feature-block">
+                <h3>INTELLIGENT CODE SELECTION</h3>
+                <p>Hybrid TF-IDF semantic analysis + call graph dependency tracking. Finds the most important code snippets ranked by relevance and architectural significance.</p>
+            </div>
+            <div class="feature-block">
+                <h3>SMART QUERY UNDERSTANDING</h3>
+                <p>Query intent detection adapts results. Ask "How does auth work?" for architecture. Ask "Extract auth module" for complete dependencies.</p>
+            </div>
+            <div class="feature-block">
+                <h3>COMPLETE DEPENDENCY MAPPING</h3>
+                <p>Traces dependency chains through static analysis. No missing imports. No broken references. Everything needed for integration.</p>
+            </div>
+            <div class="feature-block">
+                <h3>TREE-SITTER ANALYSIS</h3>
+                <p>Fast multi-language parsing with deep React/TSX support. Understands components, hooks, lifecycle methods, JSX patterns.</p>
+            </div>
+            <div class="feature-block">
+                <h3>CONTEXTUAL NAMING</h3>
+                <p>Intelligent naming uses variable assignments and callback context. Creates self-documenting snippet names. 85-93% faster navigation.</p>
+            </div>
+            <div class="feature-block">
+                <h3>INTEGRATION-READY OUTPUT</h3>
+                <p>Markdown reports with usage examples, integration notes, architectural context. Line references and call flows clearly documented.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-cases" id="use-cases">
+        <h2 class="section-title">USE CASES</h2>
+        <div class="use-case-stack">
+            <div class="use-case">
+                <div class="use-case-title">AUTHENTICATION SYSTEMS</div>
+                <p>Extract JWT handling, session management, security middleware with complete dependency chains.</p>
+                <span class="use-case-arrow">→</span>
+            </div>
+            <div class="use-case">
+                <div class="use-case-title">DATA PIPELINES</div>
+                <p>Pull ETL workflows, data transformations, processing logic with all required utilities mapped.</p>
+                <span class="use-case-arrow">→</span>
+            </div>
+            <div class="use-case">
+                <div class="use-case-title">UI COMPONENTS</div>
+                <p>Extract React/Vue components with hooks, context, styling ready for your design system.</p>
+                <span class="use-case-arrow">→</span>
+            </div>
+            <div class="use-case">
+                <div class="use-case-title">RATE LIMITERS</div>
+                <p>Get rate limiting, throttling, queue management implementations with configuration files.</p>
+                <span class="use-case-arrow">→</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section class="getting-started" id="start">
+        <h2 class="section-title">GET STARTED</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h3>INSTALL</h3>
+                    <div class="code-box">pip install deep-codebase</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h3>ASK A QUESTION</h3>
+                    <div class="code-box">deep-codebase analyze &lt;repository-url&gt; "How does authentication work?"</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h3>EXTRACT WITH SNIPPETS</h3>
+                    <div class="code-box">deep-codebase analyze &lt;repository-url&gt; "Extract auth system" --include-snippets 12</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-block">
+                <h4>PRODUCT</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#use-cases">Use Cases</a></li>
+                    <li><a href="#start">Get Started</a></li>
+                </ul>
+            </div>
+            <div class="footer-block">
+                <h4>RESOURCES</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="https://github.com">GitHub</a></li>
+                    <li><a href="#">PyPI</a></li>
+                </ul>
+            </div>
+            <div class="footer-block">
+                <h4>BUILT FOR</h4>
+                <p style="line-height: 1.6;">
+                    Developers tired of manually reverse-engineering components from open-source projects. Battle-tested on production codebases.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Terminal typing effect
+        const terminalLines = document.querySelectorAll('.terminal-line');
+        terminalLines.forEach((line, index) => {
+            line.style.opacity = '0';
+            setTimeout(() => {
+                line.style.transition = 'opacity 0.2s';
+                line.style.opacity = '1';
+            }, index * 100);
+        });
+
+        // Feature block hover stagger
+        const featureBlocks = document.querySelectorAll('.feature-block');
+        featureBlocks.forEach((block, index) => {
+            block.style.animationDelay = `${index * 0.05}s`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>deep-codebase | Extract Components from Any Codebase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg: #ffffff;
+            --color-text: #0a0a0a;
+            --color-text-secondary: #6b6b6b;
+            --color-border: #e5e5e5;
+            --color-accent: #2563eb;
+            --color-accent-hover: #1d4ed8;
+            --color-code-bg: #f8f8f8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            background: var(--color-bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            font-family: var(--font-mono);
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--color-text);
+        }
+
+        .nav-cta {
+            color: var(--color-accent) !important;
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--color-accent);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-accent);
+            color: white !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 0 6rem;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 2rem;
+            max-width: 900px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+            max-width: 720px;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .hero .description {
+            font-size: 1.125rem;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            max-width: 680px;
+            margin-bottom: 3rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 4rem 0;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: 'TERMINAL';
+            position: absolute;
+            top: 0.75rem;
+            right: 1.5rem;
+            font-size: 0.625rem;
+            font-family: var(--font-mono);
+            color: var(--color-text-secondary);
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .code-block pre {
+            font-family: var(--font-mono);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            color: var(--color-text);
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: inherit;
+        }
+
+        .command-line {
+            color: var(--color-text);
+        }
+
+        .command-prompt {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 4rem 3rem;
+            max-width: 1000px;
+        }
+
+        .feature {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        .feature p {
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            font-size: 0.9375rem;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 6rem 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .steps {
+            max-width: 800px;
+            margin-top: 3rem;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .step-number {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .step-content h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        .step-content p {
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 0;
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+            font-family: var(--font-sans);
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+            border: 1px solid var(--color-accent);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-accent-hover);
+            border-color: var(--color-accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-text);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-text);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.125rem;
+            }
+
+            .hero .description {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .step {
+                grid-template-columns: 60px 1fr;
+                gap: 1.5rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            nav {
+                gap: 1.5rem;
+            }
+
+            .code-block {
+                padding: 1.5rem;
+            }
+
+            .code-block pre {
+                font-size: 0.8125rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+
+        /* Subtle animation on scroll */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">deep-codebase</a>
+                <nav>
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="https://github.com/yourusername/deep-codebase" target="_blank">Docs</a>
+                    <a href="https://github.com/yourusername/deep-codebase" target="_blank" class="nav-cta">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Extract Components from Any Codebase—Ready to Integrate</h1>
+                <p class="subtitle">For developers who need working code from open-source projects, not just documentation.</p>
+                <p class="description">Deep-codebase finds, extracts, and prepares components for integration—automatically. Point our CLI at any repository with your target feature and get extraction-ready code with full dependency chains, usage examples, and integration guidance.</p>
+
+                <div class="code-block">
+                    <pre><code><span class="command-prompt">$</span> <span class="command-line">pip install deep-codebase</span>
+<span class="command-prompt">$</span> <span class="command-line">deep-codebase analyze &lt;repository-url&gt; "Extract auth system" --include-snippets 12</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-title">What Makes It Different</div>
+                <div class="features-grid">
+                    <div class="feature">
+                        <h3>Intelligent Code Selection</h3>
+                        <p>Semantic analysis identifies the exact components you need, understanding context and relationships within the codebase.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Complete Dependency Mapping</h3>
+                        <p>Static analysis traces the full dependency chain, ensuring nothing is missing when you integrate.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Integration-Ready Output</h3>
+                        <p>Get clean, organized code with usage examples and integration guidance—ready to add to your project.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Multi-Language Support</h3>
+                        <p>Works with React/TSX, Python, Go, Rust, and Java—with intelligent parsing for each language.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <div class="section-title">How It Works</div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">01</div>
+                        <div class="step-content">
+                            <h3>Point at Any Repository</h3>
+                            <p>Provide a repository URL and describe the feature or component you want to extract.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">02</div>
+                        <div class="step-content">
+                            <h3>Semantic Analysis</h3>
+                            <p>Deep-codebase analyzes the codebase structure, identifies relevant files, and maps dependencies using static analysis.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">03</div>
+                        <div class="step-content">
+                            <h3>Extract and Prepare</h3>
+                            <p>Receive organized, integration-ready code with complete dependency information, usage examples, and guidance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Get started in 5 minutes</h2>
+                <div class="cta-buttons">
+                    <a href="https://github.com/yourusername/deep-codebase" target="_blank" class="btn btn-primary">View on GitHub</a>
+                    <a href="https://github.com/yourusername/deep-codebase#installation" target="_blank" class="btn btn-secondary">Read Documentation</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>&copy; 2025 deep-codebase. Open-source CLI tool.</div>
+                <div class="footer-links">
+                    <a href="https://github.com/yourusername/deep-codebase" target="_blank">GitHub</a>
+                    <a href="https://github.com/yourusername/deep-codebase/blob/main/LICENSE" target="_blank">License</a>
+                    <a href="https://github.com/yourusername/deep-codebase/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

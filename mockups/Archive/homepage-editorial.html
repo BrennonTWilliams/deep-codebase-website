@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Codebase - Extract Components from Any Codebase—Ready to Integrate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #1a1a1a;
+            --charcoal: #2d2d2d;
+            --stone: #707070;
+            --paper: #f8f7f5;
+            --accent: #0066cc;
+            --accent-dark: #004999;
+            --border: #e5e3df;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: var(--ink);
+            background: var(--paper);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        code, pre {
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Stagger animation delays */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+
+        /* Header */
+        header {
+            padding: 2rem 5%;
+            border-bottom: 1px solid var(--border);
+            background: rgba(248, 247, 245, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        nav a {
+            margin-left: 2rem;
+            color: var(--charcoal);
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        /* Hero Section - Editorial Style */
+        .hero {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 8rem 5% 6rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: var(--charcoal);
+            margin-bottom: 3rem;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--stone);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+        }
+
+        .cta-primary {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+        }
+
+        /* Pull Quote - Editorial Element */
+        .pull-quote {
+            max-width: 900px;
+            margin: 6rem auto;
+            padding: 4rem 5%;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pull-quote blockquote {
+            font-size: 2rem;
+            line-height: 1.5;
+            font-style: italic;
+            color: var(--charcoal);
+            letter-spacing: -0.01em;
+        }
+
+        /* Feature Sections - Magazine Layout */
+        .feature-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 5%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: start;
+        }
+
+        .feature-section:nth-child(even) {
+            direction: rtl;
+        }
+
+        .feature-section:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .feature-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .feature-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-visual {
+            position: relative;
+            padding: 2rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Code Block Styling */
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 2rem 0;
+        }
+
+        .code-block code {
+            color: #d4d4d4;
+        }
+
+        .code-comment { color: #6a9955; }
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-function { color: #dcdcaa; }
+
+        /* Workflow Diagram */
+        .workflow {
+            max-width: 1000px;
+            margin: 6rem auto;
+            padding: 4rem 5%;
+        }
+
+        .workflow h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .workflow-step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        .workflow-step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .workflow-step p {
+            color: var(--stone);
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 4rem 5%;
+            margin: 6rem 0;
+        }
+
+        .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            color: var(--stone);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Installation Section */
+        .installation {
+            max-width: 800px;
+            margin: 6rem auto;
+            padding: 0 5%;
+            text-align: center;
+        }
+
+        .installation h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .install-command {
+            background: #1e1e1e;
+            color: #4ec9b0;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 1.1rem;
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--ink);
+            color: #999;
+            padding: 4rem 5%;
+            margin-top: 8rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-section h4 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-description {
+                font-size: 1.1rem;
+            }
+
+            .feature-section {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .feature-section:nth-child(even) {
+                direction: ltr;
+            }
+
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+
+        /* Parallax Effect */
+        .parallax-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle Hover Effects */
+        .feature-visual {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-visual:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">Deep Codebase</a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#installation">Install</a>
+                <a href="https://github.com/yourusername/deep-codebase" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="fade-in-up">Extract Components from Any Codebase—Ready to Integrate</h1>
+            <p class="subtitle fade-in-up delay-1">For developers who need working code from open-source projects, not just documentation.</p>
+            <p class="hero-description fade-in-up delay-2">Point our CLI at any repository with your target feature and get extraction-ready code with full dependency chains. Combines Claude Sonnet 4 AI analysis with Tree-sitter static parsing.</p>
+            <a href="#installation" class="cta-primary fade-in-up delay-3">Get Started</a>
+        </section>
+
+        <div class="pull-quote fade-in">
+            <blockquote>"The extraction tool for developers who need working implementations, not just documentation."</blockquote>
+        </div>
+
+        <section class="feature-section" id="features">
+            <div class="feature-content fade-in-up">
+                <h2>Complete Dependency Mapping</h2>
+                <p>Automatically traces dependency chains through static analysis—no missing imports, no broken references. Extract everything needed in one command.</p>
+                <p>Tree-sitter parsing ensures byte-accurate extraction of functions, classes, and their dependencies across the entire codebase. No manual tracing required.</p>
+            </div>
+            <div class="feature-visual fade-in-up delay-2">
+                <div class="code-block">
+<code><span class="code-comment"># Dependency chain automatically mapped</span>
+<span class="code-keyword">extract</span>: <span class="code-string">"authentication system"</span>
+
+<span class="code-comment"># Results include complete chain:</span>
+<span class="code-function">├─ auth/</span>
+   <span class="code-function">├─ middleware.ts</span>
+   <span class="code-function">├─ session.ts</span>
+   <span class="code-function">├─ utils/crypto.ts</span>
+   <span class="code-function">└─ config/auth.json</span>
+
+<span class="code-comment"># All dependencies resolved</span></code>
+                </div>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-content fade-in-up">
+                <h2>Integration-Ready Output</h2>
+                <p>Optional snippet extraction provides byte-accurate code with functions, classes, utilities, and configuration in extraction-ready format.</p>
+                <p>Get working code blocks you can immediately integrate into your project—no reverse-engineering, no missing pieces, no guesswork.</p>
+            </div>
+            <div class="feature-visual fade-in-up delay-2">
+                <div class="code-block">
+<code><span class="code-comment">// Extracted snippet - ready to integrate</span>
+
+<span class="code-keyword">export</span> <span class="code-keyword">class</span> <span class="code-function">AuthMiddleware</span> {
+  <span class="code-keyword">async</span> <span class="code-function">validate</span>(token: <span class="code-keyword">string</span>) {
+    <span class="code-comment">// Complete implementation extracted</span>
+    <span class="code-keyword">const</span> session = <span class="code-keyword">await</span> <span class="code-keyword">this</span>.sessionStore.get(token);
+    <span class="code-keyword">return</span> session?.isValid() ?? <span class="code-keyword">false</span>;
+  }
+}
+
+<span class="code-comment">// All dependencies included</span>
+<span class="code-keyword">import</span> { SessionStore } <span class="code-keyword">from</span> <span class="code-string">'./session'</span>;</code>
+                </div>
+            </div>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature-content fade-in-up">
+                <h2>Built for Real Extraction Workflows</h2>
+                <p>Created by developers tired of manually reverse-engineering components from open-source projects.</p>
+                <p>Primary use case: Extract working implementations for integration into your project. Whether you need an auth system, payment flow, or UI component—get the code with complete context.</p>
+            </div>
+            <div class="feature-visual fade-in-up delay-2">
+                <div class="code-block">
+<code><span class="code-comment"># Real extraction workflow</span>
+deep-codebase analyze \
+  https://github.com/example/app \
+  <span class="code-string">"Extract payment processing"</span> \
+  --include-snippets 15
+
+<span class="code-comment"># Get implementation details</span>
+<span class="code-keyword">✓</span> Stripe integration mapped
+<span class="code-keyword">✓</span> Webhook handlers extracted
+<span class="code-keyword">✓</span> Payment models included
+<span class="code-keyword">✓</span> Error handling complete
+
+<span class="code-comment"># Ready for integration</span></code>
+                </div>
+            </div>
+        </section>
+
+        <section class="workflow" id="workflow">
+            <h2 class="fade-in-up">Extraction Workflow in Three Steps</h2>
+            <div class="workflow-steps">
+                <div class="workflow-step fade-in-up delay-1">
+                    <div class="step-number">1</div>
+                    <h3>Specify Target</h3>
+                    <p>Point the CLI at any repository and describe the component you want to extract—auth system, payment flow, or specific feature.</p>
+                </div>
+                <div class="workflow-step fade-in-up delay-2">
+                    <div class="step-number">2</div>
+                    <h3>Automatic Analysis</h3>
+                    <p>AI analysis + Tree-sitter parsing traces complete dependency chains. Every function, class, utility, and config file mapped.</p>
+                </div>
+                <div class="workflow-step fade-in-up delay-3">
+                    <div class="step-number">3</div>
+                    <h3>Extract & Integrate</h3>
+                    <p>Get extraction-ready code with full context. Copy snippets directly into your project—dependencies resolved, no missing imports.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stats-grid">
+                <div class="stat-item fade-in-up delay-1">
+                    <h3>100%</h3>
+                    <p>Dependency Chain Accuracy</p>
+                </div>
+                <div class="stat-item fade-in-up delay-2">
+                    <h3>Claude 4</h3>
+                    <p>Powered by Sonnet</p>
+                </div>
+                <div class="stat-item fade-in-up delay-3">
+                    <h3>Any Repo</h3>
+                    <p>Works with All Codebases</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="installation" id="installation">
+            <h2 class="fade-in-up">Start Extracting Components</h2>
+            <div class="install-command fade-in-up delay-1">
+                pip install deep-codebase
+            </div>
+            <div class="code-block fade-in-up delay-2">
+<code><span class="code-comment"># Extract your first component</span>
+deep-codebase analyze &lt;repository-url&gt; \
+  <span class="code-string">"Extract auth system"</span> \
+  --include-snippets 12
+
+<span class="code-comment"># Get working code with dependencies</span>
+<span class="code-keyword">✓</span> Analysis complete
+<span class="code-keyword">✓</span> Dependencies mapped
+<span class="code-keyword">✓</span> Snippets extracted
+<span class="code-keyword">✓</span> Ready for integration</code>
+            </div>
+            <a href="https://github.com/yourusername/deep-codebase" class="cta-primary fade-in-up delay-3" target="_blank">View on GitHub</a>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Deep Codebase</h4>
+                <p>Extract components from any codebase with complete dependency mapping. Built for developers who need working code, not just documentation.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#installation">Installation</a>
+                <a href="#">Documentation</a>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="https://github.com/yourusername/deep-codebase" target="_blank">GitHub</a>
+                <a href="#">Examples</a>
+                <a href="#">API Reference</a>
+                <a href="#">Changelog</a>
+            </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <a href="#">Discord</a>
+                <a href="#">Twitter</a>
+                <a href="#">Contributing</a>
+                <a href="#">License</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Deep Codebase. Built for component extraction workflows.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with animation classes
+        document.querySelectorAll('.fade-in-up, .fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Subtle parallax effect on scroll
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrolled = window.pageYOffset;
+                    const parallaxElements = document.querySelectorAll('.feature-visual');
+
+                    parallaxElements.forEach((el, index) => {
+                        const speed = 0.05;
+                        const yPos = -(scrolled * speed);
+                        el.style.transform = `translateY(${yPos}px)`;
+                    });
+
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

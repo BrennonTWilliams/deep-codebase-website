@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep-Codebase - Intelligent Component Extraction</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, Monaco, Consolas, monospace;
+            background: #f8f8f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Canvas Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(224, 224, 216, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(224, 224, 216, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        /* Corner Brackets */
+        .corner-brackets {
+            position: relative;
+        }
+
+        .corner-brackets::before,
+        .corner-brackets::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2a2a2a;
+        }
+
+        .corner-brackets::before {
+            top: -10px;
+            left: -10px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-brackets::after {
+            bottom: -10px;
+            right: -10px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 8rem 0 6rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .hero-title-static {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-title-animated {
+            display: inline-block;
+            position: relative;
+            color: #27c93f;
+            min-width: 400px;
+            text-align: left;
+        }
+
+        .rotating-word {
+            display: inline-block;
+            animation: wordFade 8s infinite;
+        }
+
+        @keyframes wordFade {
+            0%, 15% { opacity: 1; transform: translateY(0); }
+            20%, 95% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(39, 201, 63, 0.05);
+            border-left: 4px solid #27c93f;
+            text-align: left;
+        }
+
+        /* ===== TERMINAL CAROUSEL ===== */
+        .terminal-carousel {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 3rem auto;
+            max-width: 900px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .terminal-header {
+            background: #2a2a2a;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #444;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .terminal-title {
+            color: #888;
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            position: relative;
+            min-height: 350px;
+        }
+
+        .terminal-example {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .terminal-example.active {
+            opacity: 1;
+        }
+
+        .terminal-line {
+            color: #27c93f;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .terminal-prompt {
+            color: #888;
+        }
+
+        .terminal-output {
+            color: #ccc;
+            margin-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .terminal-comment {
+            color: #666;
+            font-style: italic;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #1a1a1a;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .indicator.active {
+            background: #27c93f;
+        }
+
+        /* ===== 3-STEP DIAGRAM ===== */
+        .diagram-section {
+            background: #fafaf8;
+            border-top: 2px solid #e0e0d8;
+            border-bottom: 2px solid #e0e0d8;
+        }
+
+        .diagram-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border: 2px solid #2a2a2a;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #27c93f;
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #2a2a2a;
+            flex-shrink: 0;
+        }
+
+        /* ===== FEATURE CARDS ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border: 2px solid #2a2a2a;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 0 #27c93f;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .feature-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* ===== USE CASES ===== */
+        .use-cases {
+            background: #fafaf8;
+        }
+
+        .use-cases h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .use-case-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .use-case-item {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            border-left: 4px solid #27c93f;
+            border-top: 1px solid #e0e0d8;
+            border-right: 1px solid #e0e0d8;
+            border-bottom: 1px solid #e0e0d8;
+        }
+
+        .use-case-item h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .use-case-item p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* ===== GETTING STARTED ===== */
+        .getting-started {
+            text-align: center;
+        }
+
+        .getting-started h2 {
+            margin-bottom: 2rem;
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            color: #27c93f;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: left;
+            max-width: 700px;
+            margin: 2rem auto;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            border: 2px solid #2a2a2a;
+        }
+
+        .code-line {
+            margin-bottom: 0.5rem;
+        }
+
+        .code-comment {
+            color: #666;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 4px solid #27c93f;
+        }
+
+        footer a {
+            color: #27c93f;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #1eff4d;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #2a2a2a;
+            border: 2px solid #27c93f;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .github-link:hover {
+            background: #27c93f;
+            color: #1a1a1a;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+
+            .hero { padding: 4rem 0 3rem; }
+
+            .hero-title-animated {
+                min-width: 300px;
+            }
+
+            .diagram-container {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 3rem 0;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h1>
+                    <span class="hero-title-static">Extract Complete</span>
+                    <span class="hero-title-animated">
+                        <span class="rotating-word" id="rotatingWord">Functionality</span>
+                    </span>
+                </h1>
+                <p class="hero-subtitle">
+                    Deep-codebase analyzes your codebase, identifies related components, and extracts everything needed for clean integration—preserving context, dependencies, and business logic.
+                </p>
+                <div class="tagline corner-brackets">
+                    Deep-codebase finds, extracts, and prepares components for integration—automatically
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TERMINAL CAROUSEL -->
+    <section>
+        <div class="container">
+            <div class="terminal-carousel fade-in">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-title">deep-codebase</div>
+                </div>
+                <div class="terminal-body">
+                    <!-- Example 1 -->
+                    <div class="terminal-example active" data-index="0">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract "authentication middleware"
+                        </div>
+                        <div class="terminal-output">
+                            <div class="terminal-comment"># Analyzing codebase structure...</div>
+                            <div>✓ Found core component: src/middleware/auth.ts</div>
+                            <div>✓ Identified 3 dependencies: jwt.ts, user-service.ts, config.ts</div>
+                            <div>✓ Extracted 2 utility functions</div>
+                            <div>✓ Preserved type definitions and interfaces</div>
+                            <div class="terminal-comment"># Generated integration guide with usage examples</div>
+                            <div style="margin-top: 1rem; color: #27c93f;">
+                                📦 Package created: auth-middleware-bundle.zip
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Example 2 -->
+                    <div class="terminal-example" data-index="1">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract "payment processing flow"
+                        </div>
+                        <div class="terminal-output">
+                            <div class="terminal-comment"># Tracing business logic flow...</div>
+                            <div>✓ Mapped payment controller → service → gateway</div>
+                            <div>✓ Extracted validation logic and error handlers</div>
+                            <div>✓ Included webhook configurations</div>
+                            <div>✓ Found related database models and migrations</div>
+                            <div class="terminal-comment"># Documented API contracts and data flows</div>
+                            <div style="margin-top: 1rem; color: #27c93f;">
+                                📦 Package created: payment-flow-complete.zip
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Example 3 -->
+                    <div class="terminal-example" data-index="2">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract "user dashboard components"
+                        </div>
+                        <div class="terminal-output">
+                            <div class="terminal-comment"># Analyzing React component tree...</div>
+                            <div>✓ Found 7 related components and hooks</div>
+                            <div>✓ Extracted state management logic</div>
+                            <div>✓ Included API integration layer</div>
+                            <div>✓ Preserved CSS modules and styles</div>
+                            <div class="terminal-comment"># Generated component documentation</div>
+                            <div style="margin-top: 1rem; color: #27c93f;">
+                                📦 Package created: dashboard-ui-bundle.zip
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <div class="indicator active" data-index="0"></div>
+                    <div class="indicator" data-index="1"></div>
+                    <div class="indicator" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3-STEP DIAGRAM -->
+    <section class="diagram-section">
+        <div class="container">
+            <div class="diagram-container fade-in">
+                <div class="step corner-brackets">
+                    <div class="step-number">1</div>
+                    <h3>Analyze</h3>
+                    <p>AI understands your codebase structure and identifies related components</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="step corner-brackets">
+                    <div class="step-number">2</div>
+                    <h3>Extract</h3>
+                    <p>Pulls complete functionality with dependencies and business logic</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="step corner-brackets">
+                    <div class="step-number">3</div>
+                    <h3>Package</h3>
+                    <p>Delivers ready-to-integrate bundle with documentation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VALUE PROPOSITION -->
+    <section>
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 2rem; background: white; border: 2px solid #2a2a2a;" class="corner-brackets fade-in">
+                <h2 style="margin-bottom: 1.5rem;">Why Deep-Codebase?</h2>
+                <p style="font-size: 1.1rem; color: #2c3e50; line-height: 1.8;">
+                    Manual code extraction is tedious and error-prone. You miss dependencies, lose context, and waste hours tracking down utility functions. Deep-codebase automates intelligent extraction—understanding relationships, preserving business logic, and delivering complete, documented packages ready for integration.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE DIFFERENTIATOR CARDS -->
+    <section>
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem;">What Makes It Different</h2>
+            <div class="features-grid">
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">🧠</span>
+                    <h3>Context-Aware Extraction</h3>
+                    <p>Understands relationships between files, not just grep matches. Traces imports, dependencies, and business logic flows automatically.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">🔗</span>
+                    <h3>Dependency Resolution</h3>
+                    <p>Automatically identifies and includes all required dependencies—utilities, types, configurations, and shared modules.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">📚</span>
+                    <h3>Business Logic Preservation</h3>
+                    <p>Captures complete workflows, not isolated functions. Extracts validation logic, error handling, and domain rules intact.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">📖</span>
+                    <h3>Auto-Documentation</h3>
+                    <p>Generates integration guides with usage examples, API contracts, and architectural context—no manual documentation needed.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">🎯</span>
+                    <h3>Smart Bundling</h3>
+                    <p>Creates clean, organized packages with proper structure—ready to drop into new projects without refactoring.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">🔍</span>
+                    <h3>Multi-Language Support</h3>
+                    <p>Works across TypeScript, JavaScript, Python, Go, and more. Understands framework patterns and ecosystem conventions.</p>
+                </div>
+
+                <div class="feature-card corner-brackets">
+                    <span class="feature-icon">⚡</span>
+                    <h3>CI/CD Integration</h3>
+                    <p>Automate component extraction in pipelines. Generate reusable packages from monorepo features for microservices migration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- USE CASES -->
+    <section class="use-cases">
+        <div class="container">
+            <h2>Built for Real Extraction Workflows</h2>
+            <div class="use-case-list">
+                <div class="use-case-item fade-in">
+                    <h4>🏗️ Monorepo to Microservices</h4>
+                    <p>Extract complete features from monoliths with all dependencies, database models, and API contracts—ready for service deployment.</p>
+                </div>
+
+                <div class="use-case-item fade-in">
+                    <h4>📦 Component Library Creation</h4>
+                    <p>Pull UI components with styles, hooks, utilities, and documentation—generate publishable packages automatically.</p>
+                </div>
+
+                <div class="use-case-item fade-in">
+                    <h4>🔄 Legacy Code Modernization</h4>
+                    <p>Isolate working features from legacy systems, preserving business logic while enabling incremental rewrites.</p>
+                </div>
+
+                <div class="use-case-item fade-in">
+                    <h4>🚀 Team Knowledge Transfer</h4>
+                    <p>Extract domain logic with full context and documentation—help new developers understand complex features faster.</p>
+                </div>
+
+                <div class="use-case-item fade-in">
+                    <h4>🧪 A/B Test Isolation</h4>
+                    <p>Extract experimental features cleanly for independent testing without coupling to main codebase.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GETTING STARTED -->
+    <section class="getting-started">
+        <div class="container">
+            <h2>Get Started in Seconds</h2>
+            <div class="code-block">
+                <div class="code-line"><span class="code-comment"># Install deep-codebase</span></div>
+                <div class="code-line">npm install -g deep-codebase</div>
+                <div class="code-line" style="margin-top: 1rem;"><span class="code-comment"># Extract your first component</span></div>
+                <div class="code-line">deep-codebase extract "your feature name"</div>
+                <div class="code-line" style="margin-top: 1rem;"><span class="code-comment"># Get complete bundle with docs</span></div>
+                <div class="code-line" style="color: #ccc;">✓ Analysis complete</div>
+                <div class="code-line" style="color: #ccc;">✓ Package created: feature-bundle.zip</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Deep-Codebase. Open source extraction intelligence.</p>
+            <a href="https://github.com/yourusername/deep-codebase" class="github-link">
+                <span>⚡</span>
+                <span>View on GitHub</span>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // ===== ROTATING HERO TEXT =====
+        const words = ['Functionality', 'Features', 'Capabilities', 'Patterns', 'Workflows', 'Business Logic'];
+        let currentWordIndex = 0;
+        const rotatingWordElement = document.getElementById('rotatingWord');
+
+        function rotateWord() {
+            currentWordIndex = (currentWordIndex + 1) % words.length;
+            rotatingWordElement.textContent = words[currentWordIndex];
+        }
+
+        setInterval(rotateWord, 2000);
+
+        // ===== TERMINAL CAROUSEL =====
+        let currentExampleIndex = 0;
+        const examples = document.querySelectorAll('.terminal-example');
+        const indicators = document.querySelectorAll('.indicator');
+        let carouselInterval;
+
+        function showExample(index) {
+            examples.forEach((example, i) => {
+                example.classList.toggle('active', i === index);
+            });
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+            currentExampleIndex = index;
+        }
+
+        function nextExample() {
+            const nextIndex = (currentExampleIndex + 1) % examples.length;
+            showExample(nextIndex);
+        }
+
+        function startCarousel() {
+            carouselInterval = setInterval(nextExample, 8000);
+        }
+
+        function resetCarousel() {
+            clearInterval(carouselInterval);
+            startCarousel();
+        }
+
+        // Indicator click handlers
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                showExample(index);
+                resetCarousel();
+            });
+        });
+
+        // Start auto-rotation
+        startCarousel();
+
+        // ===== FADE-IN ON SCROLL =====
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

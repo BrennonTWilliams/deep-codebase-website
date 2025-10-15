@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep-Codebase - Extract Components from Any Codebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --slate-950: #020617;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+
+            --accent-blue: #3b82f6;
+            --accent-blue-dark: #2563eb;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            --spacing-3xl: 6rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-800);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--slate-200);
+            padding: var(--spacing-md) 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--slate-600);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .cta-button {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 2px solid var(--accent-blue);
+        }
+
+        .cta-button:hover {
+            background: var(--accent-blue-dark);
+            border-color: var(--accent-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: var(--spacing-3xl) 0 var(--spacing-2xl);
+            background: linear-gradient(135deg, var(--slate-50) 0%, white 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--slate-900);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--slate-600);
+            margin-bottom: var(--spacing-xl);
+            font-weight: 500;
+        }
+
+        /* Problem Statement */
+        .problem-statement {
+            background: white;
+            border: 2px solid var(--slate-200);
+            border-radius: 1rem;
+            padding: var(--spacing-lg);
+            margin: var(--spacing-xl) auto;
+            max-width: 700px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .problem-statement::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 1rem;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .problem-statement:hover::before {
+            opacity: 0.15;
+        }
+
+        .problem-label {
+            display: inline-block;
+            background: var(--slate-900);
+            color: white;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .problem-text {
+            font-size: 1.125rem;
+            color: var(--slate-700);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* Workflow Section */
+        .workflow-section {
+            padding: var(--spacing-3xl) 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--slate-900);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
+        }
+
+        .section-description {
+            font-size: 1.125rem;
+            color: var(--slate-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Workflow Steps */
+        .workflow-steps {
+            display: grid;
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .workflow-step {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: var(--slate-50);
+            border-radius: 1rem;
+            border: 2px solid var(--slate-200);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .workflow-step:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+            transform: translateX(4px);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-number.blue {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .step-number.green {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+        }
+
+        .step-number.purple {
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .step-content p {
+            color: var(--slate-600);
+            font-size: 1.0625rem;
+            line-height: 1.7;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .step-visual {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: 0.5rem;
+            padding: var(--spacing-md);
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: var(--spacing-sm);
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.25rem 0;
+        }
+
+        .code-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .code-icon.input {
+            background: var(--accent-blue);
+        }
+
+        .code-icon.process {
+            background: var(--accent-orange);
+        }
+
+        .code-icon.output {
+            background: var(--accent-green);
+        }
+
+        .code-text {
+            color: var(--slate-700);
+        }
+
+        .code-text.highlight {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        /* Connection Lines */
+        .workflow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 50px;
+            bottom: -2.5rem;
+            width: 2px;
+            height: 2rem;
+            background: var(--slate-300);
+        }
+
+        /* Use Cases Section */
+        .use-cases-section {
+            padding: var(--spacing-3xl) 0;
+            background: var(--slate-50);
+        }
+
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .use-case-card {
+            background: white;
+            border: 2px solid var(--slate-200);
+            border-radius: 1rem;
+            padding: var(--spacing-lg);
+            transition: all 0.3s;
+        }
+
+        .use-case-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .use-case-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .use-case-icon.auth {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            color: var(--accent-blue);
+        }
+
+        .use-case-icon.pipeline {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            color: var(--accent-green);
+        }
+
+        .use-case-icon.ui {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15));
+            color: var(--accent-purple);
+        }
+
+        .use-case-icon.limiter {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15));
+            color: var(--accent-orange);
+        }
+
+        .use-case-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .use-case-card p {
+            color: var(--slate-600);
+            line-height: 1.7;
+        }
+
+        .use-case-example {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-sm);
+            background: var(--slate-50);
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--slate-700);
+        }
+
+        /* Journey Visualization */
+        .journey-section {
+            padding: var(--spacing-3xl) 0;
+            background: white;
+        }
+
+        .journey-flow {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+            position: relative;
+        }
+
+        .journey-stage {
+            background: var(--slate-50);
+            border: 2px solid var(--slate-200);
+            border-radius: 1rem;
+            padding: var(--spacing-lg);
+            position: relative;
+        }
+
+        .journey-stage::after {
+            content: '→';
+            position: absolute;
+            right: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--slate-300);
+            font-weight: 700;
+        }
+
+        .journey-stage:last-child::after {
+            display: none;
+        }
+
+        .stage-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stage-label.before {
+            color: var(--slate-500);
+        }
+
+        .stage-label.during {
+            color: var(--accent-blue);
+        }
+
+        .stage-label.after {
+            color: var(--accent-green);
+        }
+
+        .journey-stage h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .journey-stage p {
+            color: var(--slate-600);
+            line-height: 1.7;
+            font-size: 0.9375rem;
+        }
+
+        .stage-items {
+            margin-top: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--slate-600);
+            font-size: 0.875rem;
+        }
+
+        .stage-item::before {
+            content: '•';
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        /* Quick Start Section */
+        .quick-start-section {
+            padding: var(--spacing-3xl) 0;
+            background: linear-gradient(135deg, var(--slate-900), var(--slate-800));
+            color: white;
+        }
+
+        .quick-start-section .section-title {
+            color: white;
+        }
+
+        .quick-start-section .section-description {
+            color: var(--slate-300);
+        }
+
+        .install-box {
+            background: var(--slate-800);
+            border: 2px solid var(--slate-700);
+            border-radius: 1rem;
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+            font-family: 'Courier New', monospace;
+        }
+
+        .install-command {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--slate-900);
+            border-radius: 0.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .command-prompt {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .command-text {
+            color: var(--slate-200);
+        }
+
+        .command-text span {
+            color: var(--accent-blue);
+        }
+
+        .install-note {
+            color: var(--slate-400);
+            font-size: 0.875rem;
+            margin-top: var(--spacing-sm);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--slate-900);
+            color: var(--slate-400);
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--spacing-lg);
+        }
+
+        .footer-links a {
+            color: var(--slate-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .journey-flow {
+                grid-template-columns: 1fr;
+            }
+
+            .journey-stage::after {
+                content: '↓';
+                right: auto;
+                top: auto;
+                bottom: -2.5rem;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            h1 {
+                font-size: 2.25rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .workflow-step {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-step::after {
+                left: 30px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.0625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">deep<span>-codebase</span></div>
+            <div class="nav-links">
+                <a href="#workflow">How It Works</a>
+                <a href="#use-cases">Use Cases</a>
+                <a href="#quick-start">Quick Start</a>
+                <a href="#" class="cta-button">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Extract Components from Any Codebase—Ready to Integrate</h1>
+                    <p class="hero-subtitle">For developers who need working code from open-source projects, not just documentation.</p>
+
+                    <div class="problem-statement">
+                        <span class="problem-label">The Problem</span>
+                        <p class="problem-text">You know the drill: need their authentication middleware for your project, spend hours digging through files trying to extract the implementation and dependencies. What should be a quick extraction turns into reverse-engineering their entire architecture.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Section -->
+        <section id="workflow" class="workflow-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">The Extraction Process</h2>
+                    <p class="section-description">From scattered code to organized, integration-ready components in three steps</p>
+                </div>
+
+                <div class="workflow-steps">
+                    <!-- Step 1 -->
+                    <div class="workflow-step">
+                        <div class="step-number blue">1</div>
+                        <div class="step-content">
+                            <h3>Query with Intent</h3>
+                            <p>Ask natural questions about the code you need. The system automatically detects whether you need an architecture overview, integration examples, or complete extraction.</p>
+                            <div class="step-visual">
+                                <div class="code-line">
+                                    <span class="code-icon input"></span>
+                                    <span class="code-text">$ deep-codebase analyze <span class="highlight">github.com/repo</span></span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon input"></span>
+                                    <span class="code-text highlight">"Extract authentication system"</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon process"></span>
+                                    <span class="code-text">Analyzing intent: Full extraction mode</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="workflow-step">
+                        <div class="step-number green">2</div>
+                        <div class="step-content">
+                            <h3>Intelligent Analysis</h3>
+                            <p>Hybrid semantic analysis identifies relevant code while dependency tracking ensures completeness. No manual file hunting or dependency guesswork.</p>
+                            <div class="step-visual">
+                                <div class="code-line">
+                                    <span class="code-icon process"></span>
+                                    <span class="code-text">Scanning codebase structure...</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon process"></span>
+                                    <span class="code-text">Found: <span class="highlight">auth/middleware.py</span></span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon process"></span>
+                                    <span class="code-text">Dependencies: <span class="highlight">token.py, utils/crypto.py</span></span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon process"></span>
+                                    <span class="code-text">Building dependency graph...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="workflow-step">
+                        <div class="step-number purple">3</div>
+                        <div class="step-content">
+                            <h3>Get Ready-to-Use Code</h3>
+                            <p>Receive organized snippets with full context, usage examples, and integration guidance. Copy, adjust imports, integrate.</p>
+                            <div class="step-visual">
+                                <div class="code-line">
+                                    <span class="code-icon output"></span>
+                                    <span class="code-text highlight">Extraction complete: 12 code snippets</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon output"></span>
+                                    <span class="code-text">Core: AuthMiddleware class</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon output"></span>
+                                    <span class="code-text">Dependencies: JWT utilities, crypto helpers</span>
+                                </div>
+                                <div class="code-line">
+                                    <span class="code-icon output"></span>
+                                    <span class="code-text">Usage examples: 3 integration patterns</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journey Visualization -->
+        <section class="journey-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Before, During, After</h2>
+                    <p class="section-description">The component extraction journey</p>
+                </div>
+
+                <div class="journey-flow">
+                    <div class="journey-stage">
+                        <span class="stage-label before">Before</span>
+                        <h3>Manual Hunt</h3>
+                        <p>Hours spent navigating unfamiliar codebases, tracing dependencies, and piecing together implementations.</p>
+                        <div class="stage-items">
+                            <div class="stage-item">File-by-file exploration</div>
+                            <div class="stage-item">Manual dependency tracking</div>
+                            <div class="stage-item">Incomplete extractions</div>
+                            <div class="stage-item">Integration guesswork</div>
+                        </div>
+                    </div>
+
+                    <div class="journey-stage">
+                        <span class="stage-label during">During</span>
+                        <h3>Smart Analysis</h3>
+                        <p>Automated discovery and extraction with intelligent dependency resolution and context preservation.</p>
+                        <div class="stage-items">
+                            <div class="stage-item">Semantic code search</div>
+                            <div class="stage-item">Dependency graph analysis</div>
+                            <div class="stage-item">Context extraction</div>
+                            <div class="stage-item">Usage pattern detection</div>
+                        </div>
+                    </div>
+
+                    <div class="journey-stage">
+                        <span class="stage-label after">After</span>
+                        <h3>Ready to Ship</h3>
+                        <p>Organized, documented code snippets with integration examples and dependency clarity.</p>
+                        <div class="stage-items">
+                            <div class="stage-item">Complete component code</div>
+                            <div class="stage-item">Full dependency chain</div>
+                            <div class="stage-item">Integration guidance</div>
+                            <div class="stage-item">Usage examples</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section id="use-cases" class="use-cases-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Built for Real Extraction Workflows</h2>
+                    <p class="section-description">Created by developers tired of manually reverse-engineering components</p>
+                </div>
+
+                <div class="use-cases-grid">
+                    <div class="use-case-card">
+                        <div class="use-case-icon auth">A</div>
+                        <h3>Authentication Systems</h3>
+                        <p>Extract complete auth implementations with middleware, token handling, and session management.</p>
+                        <div class="use-case-example">Extract JWT auth with refresh tokens</div>
+                    </div>
+
+                    <div class="use-case-card">
+                        <div class="use-case-icon pipeline">D</div>
+                        <h3>Data Pipelines</h3>
+                        <p>Pull ETL workflows, transformation logic, and data validation systems with all dependencies.</p>
+                        <div class="use-case-example">Extract data processing pipeline</div>
+                    </div>
+
+                    <div class="use-case-card">
+                        <div class="use-case-icon ui">U</div>
+                        <h3>UI Components</h3>
+                        <p>Grab reusable components with styles, dependencies, and integration patterns intact.</p>
+                        <div class="use-case-example">Extract modal component system</div>
+                    </div>
+
+                    <div class="use-case-card">
+                        <div class="use-case-icon limiter">R</div>
+                        <h3>Rate Limiters</h3>
+                        <p>Extract API rate limiting logic, caching strategies, and throttling mechanisms.</p>
+                        <div class="use-case-example">Extract distributed rate limiter</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section id="quick-start" class="quick-start-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Get Started in 5 Minutes</h2>
+                    <p class="section-description">Install, point at a repository, and start extracting</p>
+                </div>
+
+                <div class="install-box">
+                    <div class="install-command">
+                        <span class="command-prompt">$</span>
+                        <span class="command-text">pip install <span>deep-codebase</span></span>
+                    </div>
+                    <div class="install-command">
+                        <span class="command-prompt">$</span>
+                        <span class="command-text">deep-codebase analyze <span>&lt;repository-url&gt;</span> "Extract auth system" --include-snippets <span>12</span></span>
+                    </div>
+                    <p class="install-note">Works with GitHub, GitLab, and local repositories. Python 3.8+ required.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <p>&copy; 2025 Deep-Codebase. Built for developers by developers.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Documentation</a>
+                    <a href="#">GitHub</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

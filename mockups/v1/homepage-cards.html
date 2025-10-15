@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Codebase - Extract Components from Any Codebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 99, 132, 0.2), transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(99, 179, 237, 0.2), transparent 50%);
+            z-index: 0;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Sticky Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card Base Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.15),
+                0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Hero Card */
+        .hero-card {
+            text-align: center;
+            padding: 4rem 3rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+        }
+
+        .hero-card h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-card .subtitle {
+            font-size: 1.5rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Feature Cards Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon.purple { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .feature-icon.blue { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .feature-icon.pink { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .feature-icon.orange { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+        /* Code Card */
+        .code-card {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .code-header {
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            font-weight: 600;
+            color: #cbd5e0;
+        }
+
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid #667eea;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: scale(1.05);
+        }
+
+        .code-content {
+            padding: 2rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: block;
+            padding: 0.2rem 0;
+        }
+
+        .comment { color: #718096; }
+        .command { color: #48bb78; }
+        .output { color: #4facfe; }
+
+        /* Use Cases Cards */
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .use-case-card {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .use-case-card .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .use-case-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: #2d3748;
+        }
+
+        .use-case-card p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Large Feature Showcase */
+        .showcase-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .showcase-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .showcase-card p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* Footer Card */
+        .footer-card {
+            background: rgba(26, 32, 44, 0.95);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .footer-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-card p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-card h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-card .subtitle {
+                font-size: 1.25rem;
+            }
+
+            .features-grid,
+            .use-cases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">📦 Deep Codebase</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#quickstart">Quick Start</a></li>
+                <li><a href="#use-cases">Use Cases</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Card -->
+        <div class="card hero-card">
+            <h1>Extract Components from<br>Any Codebase—Ready to Integrate</h1>
+            <p class="subtitle">Point our CLI at any repository and extract working code with full dependency chains</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">
+                    <span>📦</span> Start Extracting
+                </a>
+                <a href="#" class="btn btn-secondary">
+                    <span>📺</span> Watch Demo
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Start Code Card -->
+        <div class="card code-card" id="quickstart">
+            <div class="code-header">
+                <span class="code-title">Extract Components in Seconds</span>
+                <button class="copy-btn" onclick="copyCode()">📋 Copy</button>
+            </div>
+            <div class="code-content">
+                <code>
+                    <span class="code-line comment"># Install Deep Codebase</span>
+                    <span class="code-line command">$ pip install deep-codebase</span>
+                    <span class="code-line"></span>
+                    <span class="code-line comment"># Extract component from any repository</span>
+                    <span class="code-line command">$ deep-codebase analyze https://github.com/repo/project \</span>
+                    <span class="code-line command">  "Extract auth system" --include-snippets 12</span>
+                    <span class="code-line"></span>
+                    <span class="code-line output">📦 Extracting authentication system...</span>
+                    <span class="code-line output">🔗 Tracing dependency chains...</span>
+                    <span class="code-line output">✅ Extracted 8 files with complete dependencies</span>
+                    <span class="code-line output">📄 Generated integration guide</span>
+                </code>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="section-header" id="features">
+            <h2>Extraction Features</h2>
+            <p>Get integration-ready code from any codebase</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="card feature-card">
+                <div class="feature-icon purple">🔗</div>
+                <h3>Smart Dependency Tracking</h3>
+                <p>Automatically traces dependency chains so you extract everything needed—no missing imports or broken references. Get complete, self-contained code.</p>
+            </div>
+
+            <div class="card feature-card">
+                <div class="feature-icon blue">📦</div>
+                <h3>Integration-Ready Output</h3>
+                <p>Get organized code snippets with usage examples and integration guidance. Copy directly into your project with clear instructions.</p>
+            </div>
+
+            <div class="card feature-card">
+                <div class="feature-icon pink">⚡</div>
+                <h3>Complete Extraction</h3>
+                <p>Byte-accurate code with functions, classes, utilities, and configuration. Extract entire systems including tests and documentation.</p>
+            </div>
+
+            <div class="card feature-card">
+                <div class="feature-icon orange">🌍</div>
+                <h3>Multi-Language Support</h3>
+                <p>React/TSX, Python, Go, Rust, Java with language-specific insights. Extracts work across different tech stacks and frameworks.</p>
+            </div>
+        </div>
+
+        <!-- Showcase Card -->
+        <div class="card showcase-card">
+            <h2>Extract Any Component You Need</h2>
+            <p>"Authentication system" • "Data pipeline" • "Rate limiter" • "UI components" • "API middleware" • "Testing utilities"</p>
+            <a href="#" class="btn btn-secondary">Try It Now →</a>
+        </div>
+
+        <!-- Use Cases Section -->
+        <div class="section-header" id="use-cases">
+            <h2>Real Extraction Workflows</h2>
+            <p>See what developers extract with Deep Codebase</p>
+        </div>
+
+        <div class="use-cases-grid">
+            <div class="card use-case-card">
+                <span class="emoji">🔐</span>
+                <h4>Extract Auth from Express.js</h4>
+                <p>Extract JWT authentication system from popular Express.js repos—get middleware, routes, validation logic, and integration examples ready for your project.</p>
+            </div>
+
+            <div class="card use-case-card">
+                <span class="emoji">📊</span>
+                <h4>Extract Data Pipelines from Python</h4>
+                <p>Pull ETL pipelines, data transformation logic, and processing workflows from Python codebases with complete dependencies and configuration.</p>
+            </div>
+
+            <div class="card use-case-card">
+                <span class="emoji">🎨</span>
+                <h4>Extract UI Components from React</h4>
+                <p>Get reusable React components with hooks, context, styling, and TypeScript types. Extract entire component libraries from open source projects.</p>
+            </div>
+
+            <div class="card use-case-card">
+                <span class="emoji">⚙️</span>
+                <h4>Extract Rate Limiters from Go</h4>
+                <p>Extract battle-tested rate limiting implementations from Go services—get algorithms, Redis integration, and distributed system patterns.</p>
+            </div>
+
+            <div class="card use-case-card">
+                <span class="emoji">🔌</span>
+                <h4>Extract API Middleware</h4>
+                <p>Pull authentication, logging, validation, and error handling middleware from production codebases with usage patterns and best practices.</p>
+            </div>
+
+            <div class="card use-case-card">
+                <span class="emoji">🧪</span>
+                <h4>Extract Testing Utilities</h4>
+                <p>Get test helpers, fixtures, mocks, and utilities from well-tested projects. Extract complete testing frameworks and patterns.</p>
+            </div>
+        </div>
+
+        <!-- Footer CTA Card -->
+        <div class="card footer-card">
+            <h2>Ready to Extract Components?</h2>
+            <p>Start extracting working code from any repository in minutes.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">
+                    <span>📦</span> Start Extracting
+                </a>
+            </div>
+            <div class="footer-links">
+                <a href="#">Documentation</a>
+                <a href="#">GitHub</a>
+                <a href="#">Examples</a>
+                <a href="#">Support</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = `# Install Deep Codebase
+$ pip install deep-codebase
+
+# Extract component from any repository
+$ deep-codebase analyze https://github.com/repo/project \\
+  "Extract auth system" --include-snippets 12
+
+📦 Extracting authentication system...
+🔗 Tracing dependency chains...
+✅ Extracted 8 files with complete dependencies
+📄 Generated integration guide`;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

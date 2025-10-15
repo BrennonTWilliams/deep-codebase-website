@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Codebase - Extract Components from Any Codebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #475569;
+            --accent: #0ea5e9;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --bg: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-code: #1e293b;
+            --border: #e2e8f0;
+            --success: #059669;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(180deg, var(--bg-subtle) 0%, var(--bg) 100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .hero-description {
+            font-size: 20px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 48px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-subtle);
+        }
+
+        /* Code Demo Section */
+        .code-demo {
+            padding: 80px 0;
+            background: var(--bg);
+        }
+
+        .code-demo-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .terminal {
+            background: var(--bg-code);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .terminal-header {
+            background: #0f172a;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .terminal-body {
+            padding: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #e2e8f0;
+        }
+
+        .terminal-command {
+            color: #10b981;
+        }
+
+        .terminal-comment {
+            color: #94a3b8;
+        }
+
+        .terminal-output {
+            color: #e2e8f0;
+            margin-left: 0;
+        }
+
+        .terminal-success {
+            color: #22c55e;
+        }
+
+        /* Query Examples Section */
+        .query-examples {
+            padding: 80px 0;
+            background: var(--bg-subtle);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .section-header p {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .query-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .query-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .query-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .query-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .query-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .query-example {
+            background: var(--bg-subtle);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .query-result {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: var(--bg);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 48px;
+            margin-top: 48px;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-subtle);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 32px;
+        }
+
+        .feature h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .feature p {
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* Capabilities Section */
+        .capabilities {
+            padding: 80px 0;
+            background: var(--bg-subtle);
+        }
+
+        .capability {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .capability:last-child {
+            margin-bottom: 0;
+        }
+
+        .capability-content h3 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .capability-content p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .capability-list {
+            list-style: none;
+        }
+
+        .capability-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .capability-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .capability-visual {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+        }
+
+        .code-string {
+            color: #34d399;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-comment {
+            color: #94a3b8;
+        }
+
+        /* Getting Started Section */
+        .getting-started {
+            padding: 80px 0;
+            background: var(--bg);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .step p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .cta-section .btn {
+            background: white;
+            color: var(--primary);
+        }
+
+        .cta-section .btn:hover {
+            background: var(--bg-subtle);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            background: var(--bg-code);
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+
+            .capability {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .capability:nth-child(even) .capability-visual {
+                order: -1;
+            }
+
+            .nav-links {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo">deep-codebase</a>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#docs">Docs</a>
+                    <a href="#github">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Extract Components from Any Codebase—Ready to Integrate</h1>
+                <p class="hero-subtitle">For developers who need working code from open-source projects, not just documentation.</p>
+                <p class="hero-description">
+                    Point our CLI at any repository with your target feature ("authentication system", "data pipeline", "rate limiter") and get extraction-ready code with full dependency chains, usage examples, and integration guidance.
+                </p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Get Started</a>
+                    <a href="#" class="btn btn-secondary">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="code-demo">
+        <div class="container">
+            <div class="code-demo-content">
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot dot-red"></span>
+                        <span class="terminal-dot dot-yellow"></span>
+                        <span class="terminal-dot dot-green"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div><span class="terminal-command">$ pip install deep-codebase</span></div>
+                        <div class="terminal-output">Successfully installed deep-codebase</div>
+                        <div style="margin-top: 16px;">
+                            <span class="terminal-command">$ deep-codebase analyze github.com/fastapi/fastapi "Extract auth system" --include-snippets 12</span>
+                        </div>
+                        <div class="terminal-output" style="margin-top: 12px;">
+                            <div class="terminal-comment">// Analyzing repository structure...</div>
+                            <div class="terminal-success">Found 847 files, processing dependency chains</div>
+                            <div class="terminal-success">Extracted 12 relevant components with full dependencies</div>
+                            <div class="terminal-success">Generated integration guide with usage examples</div>
+                        </div>
+                        <div style="margin-top: 16px;" class="terminal-comment">
+                            Results saved to ./deep-codebase-output/
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="query-examples" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Ask Natural Questions, Get Precise Code</h2>
+                <p>Query intent detection adapts results to match what you actually need</p>
+            </div>
+            <div class="query-grid">
+                <div class="query-card">
+                    <div class="query-icon">🔍</div>
+                    <h3>Architectural Understanding</h3>
+                    <div class="query-example">"How does authentication work?"</div>
+                    <p class="query-result">Broad architectural context with system flow diagrams, key components, and design patterns used throughout the implementation.</p>
+                </div>
+                <div class="query-card">
+                    <div class="query-icon">⚙️</div>
+                    <h3>Integration Examples</h3>
+                    <div class="query-example">"How to use the auth API?"</div>
+                    <p class="query-result">Focused integration examples with API signatures, configuration requirements, and working code samples ready to adapt.</p>
+                </div>
+                <div class="query-card">
+                    <div class="query-icon">📦</div>
+                    <h3>Component Extraction</h3>
+                    <div class="query-example">"Extract the caching module"</div>
+                    <p class="query-result">Complete dependencies with all required imports, utility functions, configuration files, and integration instructions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Built for Real Development Workflows</h2>
+                <p>Created by developers tired of manually reverse-engineering components from open-source projects</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Intelligent Extraction</h3>
+                    <p>Hybrid TF-IDF semantic analysis combined with call graph dependency tracking automatically identifies the most important code snippets for your query.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Complete Dependency Chains</h3>
+                    <p>Static analysis traces dependency chains automatically—no missing imports, no broken references. Every extracted component includes everything it needs.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Claude AI + Tree-sitter</h3>
+                    <p>Combines Claude Sonnet 4 AI analysis with Tree-sitter structural parsing for accurate code understanding across multiple languages.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="capabilities">
+        <div class="container">
+            <div class="capability">
+                <div class="capability-content">
+                    <h3>Semantic Relevance Ranking</h3>
+                    <p>Not all code is equally relevant. Our hybrid analysis automatically surfaces the code that matters most for your specific query.</p>
+                    <ul class="capability-list">
+                        <li>TF-IDF vectorization for semantic matching</li>
+                        <li>Call graph analysis for architectural importance</li>
+                        <li>Dependency impact scoring</li>
+                        <li>Configurable result limits and thresholds</li>
+                    </ul>
+                </div>
+                <div class="capability-visual">
+                    <div class="code-block">
+<span class="code-keyword">deep-codebase</span> analyze \
+  github.com/org/repo \
+  <span class="code-string">"rate limiting middleware"</span> \
+  --include-snippets <span class="code-function">15</span> \
+  --relevance-threshold <span class="code-function">0.7</span>
+
+<span class="code-comment"># Returns top 15 most relevant components</span>
+<span class="code-comment"># Filtered by 0.7 relevance threshold</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="capability">
+                <div class="capability-visual">
+                    <div class="code-block">
+<span class="code-comment">// Extracted with full context</span>
+
+<span class="code-keyword">from</span> utils.security <span class="code-keyword">import</span> hash_password
+<span class="code-keyword">from</span> config.settings <span class="code-keyword">import</span> JWT_SECRET
+<span class="code-keyword">from</span> models.user <span class="code-keyword">import</span> User
+
+<span class="code-keyword">class</span> <span class="code-function">AuthService</span>:
+    <span class="code-keyword">def</span> <span class="code-function">authenticate</span>(username, password):
+        <span class="code-comment"># Complete implementation with all dependencies</span>
+        <span class="code-keyword">pass</span>
+                    </div>
+                </div>
+                <div class="capability-content">
+                    <h3>Byte-Accurate Code Extraction</h3>
+                    <p>Optional snippet extraction provides complete, runnable code with proper context and all transitive dependencies resolved.</p>
+                    <ul class="capability-list">
+                        <li>Functions, classes, and methods with full bodies</li>
+                        <li>All required imports and configuration</li>
+                        <li>Utility functions and helper classes</li>
+                        <li>Integration examples and usage patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="getting-started" id="docs">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get Started in 5 Minutes</h2>
+                <p>Battle-tested on production codebases for extracting working implementations</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Install via pip</h4>
+                    <p>Single command installation with all dependencies included</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Point at repository</h4>
+                    <p>Local path or GitHub URL—supports any git repository</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Ask your question</h4>
+                    <p>Natural language queries with intelligent intent detection</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h4>Get extraction-ready code</h4>
+                    <p>Complete components with dependencies and integration guidance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Extract Working Code?</h2>
+            <p>Stop manually reverse-engineering open-source components. Start extracting.</p>
+            <a href="#" class="btn">Get Started Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 deep-codebase. Built for developers who need working code, not just documentation.</p>
+            <p style="margin-top: 12px;">
+                <a href="#">GitHub</a> ·
+                <a href="#">Documentation</a> ·
+                <a href="#">Discord</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
