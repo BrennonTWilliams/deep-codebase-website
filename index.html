@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep-Codebase - Extract Functionality from Any Codebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink-black: #1a1a1a;
+            --paper-white: #f8f8f8;
+            --canvas-texture: #e8e8e8;
+            --glyph-gray: #333;
+            --accent-line: #000;
+        }
+
+        body {
+            font-family: 'Courier New', 'Courier', monospace;
+            background: var(--paper-white);
+            color: var(--ink-black);
+            line-height: 1.6;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(0,0,0,0.02) 1px,
+                    rgba(0,0,0,0.02) 2px
+                );
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 0 4rem;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-line);
+            position: relative;
+        }
+
+        .hero .container {
+            padding: 0 1rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: normal;
+            margin-bottom: 3rem;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        /* Title text layout control */
+        .hero h1 .title-before {
+            display: inline;
+        }
+
+        .hero h1 .title-after {
+            display: inline;
+        }
+
+        /* Narrow viewport: allow line break before "from any codebase" */
+        @media (max-width: 949px) {
+            .hero h1 {
+                white-space: normal;
+            }
+
+            .hero h1 .title-before::after {
+                content: '';
+                display: block;
+            }
+        }
+
+        .hero .rotating-word {
+            font-weight: bold;
+            border-bottom: 3px solid var(--accent-line);
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            width: 420px;
+        }
+
+        /* Keep "from any codebase" together */
+        .hero h1 .title-after {
+            white-space: nowrap;
+        }
+
+        /* Terminal Component */
+        .terminal-carousel {
+            margin: 3rem auto;
+            max-width: 800px;
+            position: relative;
+            height: 400px;
+        }
+
+        .terminal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--ink-black);
+            color: var(--paper-white);
+            padding: 1.5rem;
+            border: 2px solid var(--accent-line);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .terminal.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .terminal-header {
+            border-bottom: 1px solid var(--paper-white);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .terminal-line {
+            margin: 0.5rem 0;
+        }
+
+        .terminal-prompt {
+            color: #00ff00;
+        }
+
+        .terminal-output {
+            color: #888;
+            margin-left: 1rem;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            padding: 4rem 0;
+            border-bottom: 2px solid var(--accent-line);
+        }
+
+        .process-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .diagram-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .diagram-step::after {
+            content: '→';
+            position: absolute;
+            right: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .diagram-step:last-child::after {
+            content: '';
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--accent-line);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            background: var(--paper-white);
+        }
+
+        .step-description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Tagline */
+        .tagline {
+            padding: 3rem 0;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-bottom: 2px solid var(--accent-line);
+        }
+
+        .tagline-subtext {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-weight: normal;
+            line-height: 1.8;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 4rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            border: 2px solid var(--accent-line);
+            padding: 2rem;
+            background: var(--canvas-texture);
+            position: relative;
+        }
+
+        .feature-card::before {
+            content: '┌';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .feature-card::after {
+            content: '┘';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--accent-line);
+            padding-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Use Case Section */
+        .use-case {
+            padding: 4rem 0;
+            border-top: 2px solid var(--accent-line);
+            background: var(--canvas-texture);
+        }
+
+        .use-case h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .use-case-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .use-case-item {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .use-case-item::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .use-case-item strong {
+            border-bottom: 1px solid var(--accent-line);
+        }
+
+        /* Getting Started */
+        .getting-started {
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .getting-started h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .code-block {
+            background: var(--ink-black);
+            color: var(--paper-white);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 700px;
+            border: 2px solid var(--accent-line);
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .code-line {
+            margin: 0.5rem 0;
+        }
+
+        .code-comment {
+            color: #00ff00;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            border: 2px solid var(--accent-line);
+            background: var(--canvas-texture);
+            text-decoration: none;
+            color: var(--ink-black);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .github-link:hover {
+            background: var(--ink-black);
+            color: var(--paper-white);
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 2px solid var(--accent-line);
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .process-diagram {
+                flex-direction: column;
+            }
+
+            .diagram-step::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -2rem;
+                transform: translateX(50%);
+            }
+
+            .diagram-step:last-child::after {
+                content: '';
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1><span class="title-before">Extract <span class="rotating-word" id="rotatingWord">Functionality</span></span><span class="title-after"> from any codebase</span></h1>
+
+            <!-- Terminal Carousel -->
+            <div class="terminal-carousel">
+                <div class="terminal active" data-terminal="0">
+                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/All-Hands-AI/OpenHands "task decomposition"
+                    </div>
+                    <div class="terminal-output">Analyzing repository...</div>
+                    <div class="terminal-output">├─ Identifying relevant modules</div>
+                    <div class="terminal-output">├─ Mapping dependencies</div>
+                    <div class="terminal-output">├─ Extracting task decomposition components</div>
+                    <div class="terminal-output">└─ Generating context file</div>
+                    <div class="terminal-line" style="margin-top: 1rem;">
+                        <span class="terminal-output">✓ Extraction complete: task_decomposition_context.md</span>
+                    </div>
+                    <div class="terminal-output">  - 12 relevant functions identified</div>
+                    <div class="terminal-output">  - 5 dependency chains mapped</div>
+                    <div class="terminal-output">  - Integration examples included</div>
+                </div>
+
+                <div class="terminal" data-terminal="1">
+                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/Aider-AI/aider "codebase indexing"
+                    </div>
+                    <div class="terminal-output">Analyzing repository...</div>
+                    <div class="terminal-output">├─ Scanning source tree</div>
+                    <div class="terminal-output">├─ Building call graph</div>
+                    <div class="terminal-output">├─ Extracting indexing system</div>
+                    <div class="terminal-output">└─ Preparing integration guide</div>
+                    <div class="terminal-line" style="margin-top: 1rem;">
+                        <span class="terminal-output">✓ Extraction complete: codebase_indexing_context.md</span>
+                    </div>
+                    <div class="terminal-output">  - 18 core components extracted</div>
+                    <div class="terminal-output">  - 8 utility functions included</div>
+                    <div class="terminal-output">  - Usage patterns documented</div>
+                </div>
+
+                <div class="terminal" data-terminal="2">
+                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/firecrawl/open-lovable "agent orchestration"
+                    </div>
+                    <div class="terminal-output">Analyzing repository...</div>
+                    <div class="terminal-output">├─ Parsing agent architecture</div>
+                    <div class="terminal-output">├─ Tracing orchestration flow</div>
+                    <div class="terminal-output">├─ Mapping inter-agent communication</div>
+                    <div class="terminal-output">└─ Compiling extraction package</div>
+                    <div class="terminal-line" style="margin-top: 1rem;">
+                        <span class="terminal-output">✓ Extraction complete: agent_orchestration_context.md</span>
+                    </div>
+                    <div class="terminal-output">  - 15 orchestration patterns found</div>
+                    <div class="terminal-output">  - 10 message schemas extracted</div>
+                    <div class="terminal-output">  - Integration hooks documented</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Diagram -->
+    <section class="diagram-section">
+        <div class="container">
+            <div class="process-diagram">
+                <div class="diagram-step">
+                    <div class="step-number">1</div>
+                    <div class="step-description">
+                        Enter the GitHub URL and feature to extract
+                    </div>
+                </div>
+                <div class="diagram-step">
+                    <div class="step-number">2</div>
+                    <div class="step-description">
+                        Deep-Codebase analyzes codebase and generates an LLM-optimized context file
+                    </div>
+                </div>
+                <div class="diagram-step">
+                    <div class="step-number">3</div>
+                    <div class="step-description">
+                        Your coding Agent of choice uses the context file to replicate the feature
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tagline -->
+    <section class="tagline">
+        <div class="container">
+            <div>Deep-codebase finds, extracts, and prepares components for integration—automatically</div>
+            <div class="tagline-subtext">
+                Point deep-codebase at any repository with your target feature ("authentication system", "data pipeline", "rate limiter")
+                and get extraction-ready code with full dependency chains, usage examples, and integration guidance - all in a single file,
+                optimized for LLM coding agents (and humans, too)
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Intelligent Code Selection</h3>
+                    <p>
+                        Not all code is equally relevant. Our hybrid TF-IDF semantic analysis combined with call graph dependency tracking
+                        automatically identifies the most important code snippets for your query. Query intent detection adapts results—whether
+                        you need architectural overview, API integration examples, or complete component extraction with dependencies ranked by
+                        relevance and architectural significance.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Smart Query Understanding</h3>
+                    <p>
+                        Ask "How does authentication work?" and get broad architectural context. Ask "How to use the auth API?" and get focused
+                        integration examples. Ask "Extract the caching module" and get complete dependencies. The system automatically detects
+                        your intent and optimizes results accordingly.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Complete Dependency Mapping</h3>
+                    <p>
+                        Automatically traces dependency chains through static analysis so you extract everything needed—no missing imports, no
+                        broken references. Optional snippet extraction (--include-snippets) provides byte-accurate code with functions, classes,
+                        utilities, and configuration in extraction-ready format.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Tree-Sitter Static Analysis</h3>
+                    <p>
+                        Fast, multi-language code parsing with deep React/TSX support—understands components, hooks (useState, useEffect, custom),
+                        lifecycle methods, and JSX patterns for accurate frontend component extraction. Also supports Python, JavaScript, TypeScript,
+                        Go, Rust, and Java with language-specific insights.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Contextual Function Naming</h3>
+                    <p>
+                        No more "anonymous" functions in extracted code. Intelligent naming uses variable assignments, callback context, and line
+                        numbers to create self-documenting snippet names—enabling instant code identification and 85-93% faster navigation.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Integration-Ready Output</h3>
+                    <p>
+                        Comprehensive markdown reports with usage examples, integration notes, and architectural context. Line references, call flows,
+                        and integration points clearly documented—showing you exactly how to adapt extracted code for your project.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Async Performance Architecture</h3>
+                    <p>
+                        Concurrent processing with intelligent resource management analyzes large codebases efficiently (35-50% faster than sequential
+                        processing). Typical analysis completes in 2-8 minutes depending on size and complexity.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-case">
+        <div class="container">
+            <h2>Built for Real Extraction Workflows</h2>
+            <div class="use-case-content">
+                <p style="text-align: center; margin-bottom: 2rem;">
+                    Created by developers tired of manually reverse-engineering components from open-source projects.
+                    Battle-tested on production codebases.
+                </p>
+
+                <div class="use-case-item">
+                    <strong>Primary use case</strong>: Extract working implementations (authentication systems, data pipelines,
+                    UI components, rate limiters) from any codebase for integration into your project.
+                </div>
+
+                <div class="use-case-item">
+                    <strong>Secondary benefits</strong>: Evaluate libraries before adoption, audit dependencies, learn from
+                    reference implementations.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section class="getting-started">
+        <div class="container">
+            <h2>Get started with one command</h2>
+
+            <div class="code-block">
+                <div class="code-line">pip install deep-codebase</div>
+                <div class="code-line">deep-codebase extract &lt;repository-url&gt; "recommendation algorithm"</div>
+            </div>
+
+            <p>Visit our GitHub repository for installation, examples, and full documentation.</p>
+
+            <a href="https://github.com/yourusername/deep-codebase" class="github-link">
+                → View on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Deep-Codebase | Extract • Analyze • Integrate</p>
+        </div>
+    </footer>
+
+    <script>
+        // Rotating words in hero
+        const words = ['Functionality', 'Features', 'Capabilities', 'Patterns', 'Workflows', 'Business Logic'];
+        let currentWordIndex = 0;
+        const rotatingWord = document.getElementById('rotatingWord');
+
+        function rotateWord() {
+            currentWordIndex = (currentWordIndex + 1) % words.length;
+            rotatingWord.style.opacity = '0';
+
+            setTimeout(() => {
+                rotatingWord.textContent = words[currentWordIndex];
+                rotatingWord.style.opacity = '1';
+            }, 300);
+        }
+
+        rotatingWord.style.transition = 'opacity 0.3s ease';
+        setInterval(rotateWord, 5000);
+
+        // Terminal carousel
+        const terminals = document.querySelectorAll('.terminal');
+        let currentTerminal = 0;
+
+        function switchTerminal() {
+            terminals[currentTerminal].classList.remove('active');
+            currentTerminal = (currentTerminal + 1) % terminals.length;
+            terminals[currentTerminal].classList.add('active');
+        }
+
+        setInterval(switchTerminal, 8000);
+    </script>
+</body>
+</html>
