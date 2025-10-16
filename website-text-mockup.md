@@ -33,7 +33,7 @@ Ask "How does authentication work?" and get broad architectural context. Ask "Ho
 **Complete Dependency Mapping**
 Automatically traces dependency chains through static analysis so you extract everything needed—no missing imports, no broken references. Optional snippet extraction (`--include-snippets`) provides byte-accurate code with functions, classes, utilities, and configuration in extraction-ready format.
 
-**Tree-Sitter Static Analysis**
+**Polyglot Code Intelligence**
 Fast, multi-language code parsing with deep React/TSX support—understands components, hooks (useState, useEffect, custom), lifecycle methods, and JSX patterns for accurate frontend component extraction. Also supports Python, JavaScript, TypeScript, Go, Rust, and Java with language-specific insights.
 
 **Contextual Function Naming**
