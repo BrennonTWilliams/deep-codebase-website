@@ -48,12 +48,30 @@
             color: var(--ink-black);
             line-height: 1.6;
             background: var(--bg-diver-base);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 403px;
+            background-image: url('images/diver/glyph-wall-left.png');
+            background-repeat: no-repeat;
+            background-position: left top;
+            background-size: 403px 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         /* Hero Section */
@@ -65,48 +83,17 @@
         }
 
         .hero .container {
-            padding: 0;
-            display: flex;
-            align-items: center;
-            gap: 0;
-            min-height: 800px;
-            position: relative;
-        }
-
-        .hero-image-container {
-            flex-shrink: 0;
-            width: 450px;
-            height: 800px;
-            position: absolute;
-            left: -20px;
-            top: -20px;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .hero-image {
-            width: calc(100% + 40px);
-            height: calc(100% + 40px);
-            object-fit: cover;
-            object-position: left center;
-            margin: 0;
-            padding: 0;
-            mask-image: linear-gradient(to right, white 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, white 85%, transparent 100%);
-        }
-
-        .hero-text-container {
-            flex: 1;
-            padding: 2rem 4rem 2rem 3rem;
-            position: relative;
-            z-index: 1;
-            min-height: 600px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-left: 0;
-            padding-left: 470px;
+            align-items: center;
+        }
+
+        .hero-text-container {
+            max-width: 900px;
         }
 
         .hero .hero-tagline {
@@ -115,7 +102,7 @@
             margin-bottom: 1rem;
             letter-spacing: 0.02em;
             color: var(--glyph-gray);
-            text-align: left;
+            text-align: center;
         }
 
         .hero h1 {
@@ -124,7 +111,7 @@
             margin-bottom: 3rem;
             letter-spacing: 0.02em;
             white-space: nowrap;
-            text-align: left;
+            text-align: center;
         }
 
         .hero .rotating-word {
@@ -139,31 +126,17 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .hero .container {
-                flex-direction: column;
-                min-height: auto;
-                gap: 1rem;
-            }
-
-            .hero-image-container {
-                width: 100%;
-                height: 400px;
-            }
-
-            .hero-text-container {
-                background: var(--bg-diver-base);
                 padding: 1.5rem;
                 min-height: auto;
-                margin-left: 0;
             }
 
             .hero .hero-tagline {
                 font-size: 1.2rem;
-                text-align: center;
             }
 
             .hero h1 {
                 font-size: 2rem;
-                text-align: center;
+                white-space: normal;
             }
         }
 
@@ -571,9 +544,6 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <div class="hero-image-container">
-                <img src="images/diver/diver-wall-left.png" alt="Deep-Codebase Diver" class="hero-image">
-            </div>
             <div class="hero-text-container">
                 <p class="hero-tagline">Dive into any codebase,</p>
                 <h1>Extract <span class="rotating-word" id="rotatingWord">Functionality</span></h1>
