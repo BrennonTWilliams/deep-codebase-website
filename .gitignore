@@ -1,2 +1,5 @@
-/.DS_Store
-/astonaut-miners
+.DS_Store
+images/astonaut-miners/
+#images/
+
+.playwright-mcp/
