@@ -13,25 +13,41 @@
 
         :root {
             --ink-black: #1a1a1a;
-            --paper-white: #f8f8f8;
-            --canvas-texture: #e8e8e8;
             --glyph-gray: #333;
-            --accent-line: #000;
+            --accent-line: #2a2620;
+
+            /* Diver image extracted palette */
+            --bg-diver-base: #edebe2;
+            --bg-diver-shadow: #eae7de;
+            --bg-diver-light: #f1efe4;
+            --bg-diver-texture-1: #eae7de;
+            --bg-diver-texture-2: #f1efe4;
+            --bg-diver-texture-3: #eeece2;
+
+            /* RGB values for alpha compositing */
+            --bg-diver-base-rgb: 237, 235, 226;
+            --bg-diver-shadow-rgb: 234, 231, 222;
+            --bg-diver-light-rgb: 241, 239, 228;
+
+            /* Legacy aliases for compatibility */
+            --paper-white: #edebe2;
+            --paper-warm: #f1efe4;
+            --paper-shadow: #eae7de;
+            --canvas-texture: #eeece2;
+            --canvas-aged: #eae7de;
+
+            /* Texture opacity values */
+            --grain-light: 0.006;
+            --grain-medium: 0.01;
+            --grain-heavy: 0.015;
+            --age-spot: 0.12;
         }
 
         body {
             font-family: 'Courier New', 'Courier', monospace;
-            background: var(--paper-white);
             color: var(--ink-black);
             line-height: 1.6;
-            background-image:
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(0,0,0,0.02) 1px,
-                    rgba(0,0,0,0.02) 2px
-                );
+            background: var(--bg-diver-base);
         }
 
         .container {
@@ -42,14 +58,64 @@
 
         /* Hero Section */
         .hero {
-            padding: 6rem 0 4rem;
-            text-align: center;
+            padding: 4rem 0 4rem;
             border-bottom: 2px solid var(--accent-line);
             position: relative;
+            overflow: hidden;
         }
 
         .hero .container {
-            padding: 0 1rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            min-height: 800px;
+            position: relative;
+        }
+
+        .hero-image-container {
+            flex-shrink: 0;
+            width: 450px;
+            height: 800px;
+            position: absolute;
+            left: -20px;
+            top: -20px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .hero-image {
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
+            object-fit: cover;
+            object-position: left center;
+            margin: 0;
+            padding: 0;
+            mask-image: linear-gradient(to right, white 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, white 85%, transparent 100%);
+        }
+
+        .hero-text-container {
+            flex: 1;
+            padding: 2rem 4rem 2rem 3rem;
+            position: relative;
+            z-index: 1;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 0;
+            padding-left: 470px;
+        }
+
+        .hero .hero-tagline {
+            font-size: 1.5rem;
+            font-weight: normal;
+            margin-bottom: 1rem;
+            letter-spacing: 0.02em;
+            color: var(--glyph-gray);
+            text-align: left;
         }
 
         .hero h1 {
@@ -58,27 +124,7 @@
             margin-bottom: 3rem;
             letter-spacing: 0.02em;
             white-space: nowrap;
-        }
-
-        /* Title text layout control */
-        .hero h1 .title-before {
-            display: inline;
-        }
-
-        .hero h1 .title-after {
-            display: inline;
-        }
-
-        /* Narrow viewport: allow line break before "from any codebase" */
-        @media (max-width: 949px) {
-            .hero h1 {
-                white-space: normal;
-            }
-
-            .hero h1 .title-before::after {
-                content: '';
-                display: block;
-            }
+            text-align: left;
         }
 
         .hero .rotating-word {
@@ -90,9 +136,35 @@
             width: 420px;
         }
 
-        /* Keep "from any codebase" together */
-        .hero h1 .title-after {
-            white-space: nowrap;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero .container {
+                flex-direction: column;
+                min-height: auto;
+                gap: 1rem;
+            }
+
+            .hero-image-container {
+                width: 100%;
+                height: 400px;
+            }
+
+            .hero-text-container {
+                background: var(--bg-diver-base);
+                padding: 1.5rem;
+                min-height: auto;
+                margin-left: 0;
+            }
+
+            .hero .hero-tagline {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                text-align: center;
+            }
         }
 
         /* Terminal Component */
@@ -189,7 +261,26 @@
             font-size: 1.5rem;
             font-weight: bold;
             margin: 0 auto 1rem;
-            background: var(--paper-white);
+            background:
+                /* Very fine grain */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    rgba(0,0,0,0.005) 1px,
+                    transparent 2px
+                ),
+                /* Subtle radial highlight */
+                radial-gradient(
+                    circle at 40% 40%,
+                    rgba(255,255,255,0.3) 0%,
+                    transparent 70%
+                ),
+                /* Clean base using diver palette */
+                linear-gradient(
+                    135deg,
+                    var(--bg-diver-light) 0%,
+                    var(--bg-diver-base) 100%
+                );
         }
 
         .step-description {
@@ -223,16 +314,60 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
             margin-top: 3rem;
+        }
+
+        @media (max-width: 1400px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .feature-card {
             border: 2px solid var(--accent-line);
             padding: 2rem;
-            background: var(--canvas-texture);
             position: relative;
+            background:
+                /* Coarser grain for depth */
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    rgba(0,0,0,0.012) 1px,
+                    transparent 3px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    rgba(0,0,0,0.01) 1px,
+                    transparent 3px
+                ),
+                /* Canvas texture variation using diver palette */
+                radial-gradient(
+                    ellipse at 30% 20%,
+                    rgba(var(--bg-diver-shadow-rgb),0.5) 0%,
+                    transparent 45%
+                ),
+                radial-gradient(
+                    ellipse at 70% 80%,
+                    rgba(var(--bg-diver-shadow-rgb),0.4) 0%,
+                    transparent 40%
+                ),
+                /* Base canvas color using diver palette */
+                linear-gradient(
+                    135deg,
+                    var(--bg-diver-base) 0%,
+                    var(--bg-diver-shadow) 30%,
+                    var(--bg-diver-texture-3) 60%,
+                    var(--bg-diver-shadow) 100%
+                );
         }
 
         .feature-card::before {
@@ -269,7 +404,44 @@
         .use-case {
             padding: 4rem 0;
             border-top: 2px solid var(--accent-line);
-            background: var(--canvas-texture);
+            background:
+                /* Woven texture simulation */
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0,0,0,0.015) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0,0,0,0.012) 3px,
+                    transparent 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(0,0,0,0.012) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0,0,0,0.01) 3px,
+                    transparent 4px
+                ),
+                /* Canvas variation using diver palette */
+                radial-gradient(
+                    ellipse at 25% 35%,
+                    rgba(var(--bg-diver-shadow-rgb),0.6) 0%,
+                    transparent 50%
+                ),
+                radial-gradient(
+                    ellipse at 75% 65%,
+                    rgba(var(--bg-diver-shadow-rgb),0.5) 0%,
+                    transparent 45%
+                ),
+                /* Base canvas color using diver palette */
+                linear-gradient(
+                    135deg,
+                    var(--bg-diver-texture-3) 0%,
+                    var(--bg-diver-shadow) 25%,
+                    var(--bg-diver-base) 50%,
+                    var(--bg-diver-shadow) 75%,
+                    var(--bg-diver-texture-1) 100%
+                );
         }
 
         .use-case h2 {
@@ -336,11 +508,22 @@
             margin-top: 2rem;
             padding: 1rem 2rem;
             border: 2px solid var(--accent-line);
-            background: var(--canvas-texture);
             text-decoration: none;
             color: var(--ink-black);
             font-weight: bold;
             transition: all 0.3s ease;
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    rgba(0,0,0,0.008) 1px,
+                    transparent 2px
+                ),
+                linear-gradient(
+                    135deg,
+                    var(--bg-diver-base) 0%,
+                    var(--bg-diver-texture-3) 100%
+                );
         }
 
         .github-link:hover {
@@ -388,8 +571,19 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1><span class="title-before">Extract <span class="rotating-word" id="rotatingWord">Functionality</span></span><span class="title-after"> from any codebase</span></h1>
+            <div class="hero-image-container">
+                <img src="images/diver/diver-wall-left.png" alt="Deep-Codebase Diver" class="hero-image">
+            </div>
+            <div class="hero-text-container">
+                <p class="hero-tagline">Dive into any codebase,</p>
+                <h1>Extract <span class="rotating-word" id="rotatingWord">Functionality</span></h1>
+            </div>
+        </div>
+    </section>
 
+    <!-- Terminal Carousel Section -->
+    <section style="padding: 4rem 0; border-bottom: 2px solid var(--accent-line);">
+        <div class="container">
             <!-- Terminal Carousel -->
             <div class="terminal-carousel">
                 <div class="terminal active" data-terminal="0">
@@ -448,6 +642,7 @@
             </div>
         </div>
     </section>
+    </section>
 
     <!-- Process Diagram -->
     <section class="diagram-section">
@@ -494,61 +689,28 @@
                 <div class="feature-card">
                     <h3>Intelligent Code Selection</h3>
                     <p>
-                        Not all code is equally relevant. Our hybrid TF-IDF semantic analysis combined with call graph dependency tracking
-                        automatically identifies the most important code snippets for your query. Query intent detection adapts results—whether
-                        you need architectural overview, API integration examples, or complete component extraction with dependencies ranked by
-                        relevance and architectural significance.
+                        Advanced semantic analysis extracts only query-relevant code segments, cutting token waste by up to 90% through intelligent context filtering.
                     </p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>Smart Query Understanding</h3>
+                    <h3>Full Dependency Mapping</h3>
                     <p>
-                        Ask "How does authentication work?" and get broad architectural context. Ask "How to use the auth API?" and get focused
-                        integration examples. Ask "Extract the caching module" and get complete dependencies. The system automatically detects
-                        your intent and optimizes results accordingly.
+                        Automatically resolves imports, function calls, and type dependencies to ensure complete context during code extraction—no missing pieces.
                     </p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>Complete Dependency Mapping</h3>
+                    <h3>Polyglot Code Intelligence</h3>
                     <p>
-                        Automatically traces dependency chains through static analysis so you extract everything needed—no missing imports, no
-                        broken references. Optional snippet extraction (--include-snippets) provides byte-accurate code with functions, classes,
-                        utilities, and configuration in extraction-ready format.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Tree-Sitter Static Analysis</h3>
-                    <p>
-                        Fast, multi-language code parsing with deep React/TSX support—understands components, hooks (useState, useEffect, custom),
-                        lifecycle methods, and JSX patterns for accurate frontend component extraction. Also supports Python, JavaScript, TypeScript,
-                        Go, Rust, and Java with language-specific insights.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Contextual Function Naming</h3>
-                    <p>
-                        No more "anonymous" functions in extracted code. Intelligent naming uses variable assignments, callback context, and line
-                        numbers to create self-documenting snippet names—enabling instant code identification and 85-93% faster navigation.
+                        Millisecond-fast incremental parsing delivers real-time syntax trees for instant code understanding across languages.
                     </p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Integration-Ready Output</h3>
                     <p>
-                        Comprehensive markdown reports with usage examples, integration notes, and architectural context. Line references, call flows,
-                        and integration points clearly documented—showing you exactly how to adapt extracted code for your project.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Async Performance Architecture</h3>
-                    <p>
-                        Concurrent processing with intelligent resource management analyzes large codebases efficiently (35-50% faster than sequential
-                        processing). Typical analysis completes in 2-8 minutes depending on size and complexity.
+                        Structured JSON/XML output enables seamless integration with CI/CD pipelines, IDEs, and LLM workflows for automated quality gates and toolchain compatibility.
                     </p>
                 </div>
             </div>
