@@ -66,6 +66,22 @@
             pointer-events: none;
         }
 
+        /* Animated Diver Sprite */
+        #diver-sprite {
+            position: fixed;
+            left: 200px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 403px;
+            height: 560px;
+            background-image: url('images/diver/spritesheets/diver-spritesheet.png');
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            background-size: 2418px 2240px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -513,6 +529,18 @@
         }
 
         /* Responsive */
+        @media (max-width: 1024px) {
+            /* Hide diver on tablet and mobile to prevent content overlap */
+            #diver-sprite {
+                display: none;
+            }
+
+            /* Also hide wall background on smaller screens */
+            body::before {
+                display: none;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
@@ -541,6 +569,9 @@
     </style>
 </head>
 <body>
+    <!-- Animated Diver Sprite -->
+    <div id="diver-sprite"></div>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
@@ -765,6 +796,97 @@
         }
 
         setInterval(switchTerminal, 8000);
+
+        // Diver sprite animation based on scroll
+        (function() {
+            const diverSprite = document.getElementById('diver-sprite');
+            let frames = [];
+            let ticking = false;
+            const DEBUG = false; // Set to true to enable console logging
+
+            // Fetch and parse spritesheet JSON
+            fetch('images/diver/spritesheets/diver-spritesheet.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Extract frame coordinates and sort by frame number
+                    const frameKeys = Object.keys(data.frames).sort();
+                    frames = frameKeys.map(key => {
+                        const frame = data.frames[key].frame;
+                        return {
+                            x: frame.x,
+                            y: frame.y
+                        };
+                    });
+
+                    console.log('Diver spritesheet loaded:', frames.length, 'frames');
+
+                    // Add scroll listener
+                    window.addEventListener('scroll', onScroll);
+                    console.log('Diver scroll animation initialized');
+
+                    // Initial frame setup - MUST be called AFTER frames are populated
+                    updateDiverFrame();
+                })
+                .catch(error => {
+                    console.error('CRITICAL: Diver animation failed to initialize:', error);
+                    console.error('Check that images/diver/spritesheets/diver-spritesheet.json exists');
+                });
+
+            function onScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateDiverFrame();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            function updateDiverFrame() {
+                if (frames.length === 0) {
+                    if (DEBUG) console.warn('updateDiverFrame called but frames not loaded yet');
+                    return;
+                }
+
+                const scrollY = window.scrollY;
+                const viewportHeight = window.innerHeight;
+
+                // Calculate cycle progress (0 to 1) within one viewport height
+                const cycleProgress = (scrollY % viewportHeight) / viewportHeight;
+
+                // Map to frame index (0 to 23 for 24 frames) - prevent array bounds overflow
+                const frameIndex = Math.min(Math.floor(cycleProgress * frames.length), frames.length - 1);
+
+                // Get frame coordinates
+                const frame = frames[frameIndex];
+
+                // Calculate background position with precise scaling
+                // Frame size: 1220x1696px, Display size: 403x560px
+                // Spritesheet: 7320x6784px, Scaled to: 2418x2240px
+                // Scale factors match the background-size scaling
+                const scaleX = 403 / 1220;  // 0.330327... (or equivalently: 2418 / 7320)
+                const scaleY = 560 / 1696;  // 0.330188... (or equivalently: 2240 / 6784)
+                const bgX = -(frame.x * scaleX);
+                const bgY = -(frame.y * scaleY);
+
+                if (DEBUG) {
+                    console.log('Diver frame update:', {
+                        scrollY,
+                        frameIndex,
+                        frameCoords: frame,
+                        bgPosition: `${bgX}px ${bgY}px`
+                    });
+                }
+
+                // Update sprite background position
+                diverSprite.style.backgroundPosition = `${bgX}px ${bgY}px`;
+            }
+        })();
     </script>
 </body>
 </html>
