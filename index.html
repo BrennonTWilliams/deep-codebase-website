@@ -72,12 +72,12 @@
             left: 200px;
             top: 50%;
             transform: translateY(-50%);
-            width: 403px;
-            height: 560px;
+            width: 100.75px;
+            height: 140px;
             background-image: url('images/diver/spritesheets/diver-spritesheet.png');
             background-repeat: no-repeat;
             background-position: 0 0;
-            background-size: 2418px 2240px;
+            background-size: 604.5px 560px;
             z-index: 0;
             pointer-events: none;
         }
@@ -866,11 +866,11 @@
                 const frame = frames[frameIndex];
 
                 // Calculate background position with precise scaling
-                // Frame size: 1220x1696px, Display size: 403x560px
-                // Spritesheet: 7320x6784px, Scaled to: 2418x2240px
+                // Frame size: 1220x1696px, Display size: 100.75x140px (4x smaller)
+                // Spritesheet: 7320x6784px, Scaled to: 604.5x560px (4x smaller)
                 // Scale factors match the background-size scaling
-                const scaleX = 403 / 1220;  // 0.330327... (or equivalently: 2418 / 7320)
-                const scaleY = 560 / 1696;  // 0.330188... (or equivalently: 2240 / 6784)
+                const scaleX = 100.75 / 1220;  // 0.0825819... (or equivalently: 604.5 / 7320)
+                const scaleY = 140 / 1696;     // 0.0825471... (or equivalently: 560 / 6784)
                 const bgX = -(frame.x * scaleX);
                 const bgY = -(frame.y * scaleY);
 
