@@ -80,10 +80,9 @@
 
         /* Animated Diver Sprite - lazy loaded via JavaScript */
         #diver-sprite {
-            position: fixed;
-            left: 200px;
-            top: 50%;
-            transform: translateY(-50%);
+            position: absolute;
+            left: 220px;
+            top: 180px;
             width: 100.75px;
             height: 140px;
             background-repeat: no-repeat;
@@ -791,13 +790,16 @@
             }
         });
 
-        // Diver sprite animation based on scroll
+        // Diver sprite automatic animation
         (function() {
             const diverSprite = document.getElementById('diver-sprite');
             let frames = [];
-            let ticking = false;
+            let currentFrameIndex = 0;
+            let animationInterval = null;
             let spritesheetLoaded = false;
             const DEBUG = false; // Set to true to enable console logging
+            const FRAME_RATE = 24; // 24 fps for smooth animation
+            const FRAME_DURATION = 1000 / FRAME_RATE; // ~41.67ms per frame
 
             // Performance: Lazy load spritesheet after page loads
             function loadSpritesheet() {
@@ -828,12 +830,9 @@
 
                         if (DEBUG) console.log('Diver spritesheet loaded:', frames.length, 'frames');
 
-                        // Performance: Add passive scroll listener for better scrolling performance
-                        window.addEventListener('scroll', onScroll, { passive: true });
-                        if (DEBUG) console.log('Diver scroll animation initialized');
-
-                        // Initial frame setup - MUST be called AFTER frames are populated
-                        updateDiverFrame();
+                        // Start automatic animation
+                        startAnimation();
+                        if (DEBUG) console.log('Diver automatic animation started at', FRAME_RATE, 'fps');
                     })
                     .catch(error => {
                         console.error('Diver animation unavailable:', error);
@@ -849,13 +848,23 @@
                 window.addEventListener('load', loadSpritesheet);
             }
 
-            function onScroll() {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        updateDiverFrame();
-                        ticking = false;
-                    });
-                    ticking = true;
+            function startAnimation() {
+                if (animationInterval || frames.length === 0) return;
+
+                // Set initial frame
+                updateDiverFrame();
+
+                // Start frame cycling
+                animationInterval = setInterval(() => {
+                    currentFrameIndex = (currentFrameIndex + 1) % frames.length;
+                    updateDiverFrame();
+                }, FRAME_DURATION);
+            }
+
+            function stopAnimation() {
+                if (animationInterval) {
+                    clearInterval(animationInterval);
+                    animationInterval = null;
                 }
             }
 
@@ -865,31 +874,21 @@
                     return;
                 }
 
-                const scrollY = window.scrollY;
-                const viewportHeight = window.innerHeight;
-
-                // Calculate cycle progress (0 to 1) within one viewport height
-                const cycleProgress = (scrollY % viewportHeight) / viewportHeight;
-
-                // Map to frame index (0 to 23 for 24 frames) - prevent array bounds overflow
-                const frameIndex = Math.min(Math.floor(cycleProgress * frames.length), frames.length - 1);
-
-                // Get frame coordinates
-                const frame = frames[frameIndex];
+                // Get current frame coordinates
+                const frame = frames[currentFrameIndex];
 
                 // Calculate background position with precise scaling
-                // Frame size: 1220x1696px, Display size: 100.75x140px (4x smaller)
-                // Spritesheet: 7320x6784px, Scaled to: 604.5x560px (4x smaller)
+                // Frame size: 1220x1696px, Display size: 100.75x140px
+                // Spritesheet: 7320x6784px, Scaled to: 604.5x560px
                 // Scale factors match the background-size scaling
-                const scaleX = 100.75 / 1220;  // 0.0825819... (or equivalently: 604.5 / 7320)
-                const scaleY = 140 / 1696;     // 0.0825471... (or equivalently: 560 / 6784)
+                const scaleX = 100.75 / 1220;  // 0.0825819...
+                const scaleY = 140 / 1696;     // 0.0825471...
                 const bgX = -(frame.x * scaleX);
                 const bgY = -(frame.y * scaleY);
 
                 if (DEBUG) {
                     console.log('Diver frame update:', {
-                        scrollY,
-                        frameIndex,
+                        frameIndex: currentFrameIndex,
                         frameCoords: frame,
                         bgPosition: `${bgX}px ${bgY}px`
                     });
@@ -898,6 +897,15 @@
                 // Update sprite background position
                 diverSprite.style.backgroundPosition = `${bgX}px ${bgY}px`;
             }
+
+            // Performance: Pause animation when page is hidden to save resources
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAnimation();
+                } else {
+                    startAnimation();
+                }
+            });
         })();
     </script>
 </body>
