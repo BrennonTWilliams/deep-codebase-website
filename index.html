@@ -58,7 +58,12 @@
             top: 0;
             bottom: 0;
             width: 403px;
-            background-image: url('images/diver/glyph-wall-left.png');
+            /* WebP with PNG fallback */
+            background-image: url('images/diver/glyph-wall-left.webp');
+            background-image: image-set(
+                url('images/diver/glyph-wall-left.webp') type('image/webp'),
+                url('images/diver/glyph-wall-left.png') type('image/png')
+            );
             background-repeat: no-repeat;
             background-position: left top;
             background-size: 403px 100vh;
@@ -66,7 +71,14 @@
             pointer-events: none;
         }
 
-        /* Animated Diver Sprite */
+        /* Fallback for browsers without image-set support */
+        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
+            body::before {
+                background-image: url('images/diver/glyph-wall-left.png');
+            }
+        }
+
+        /* Animated Diver Sprite - lazy loaded via JavaScript */
         #diver-sprite {
             position: fixed;
             left: 200px;
@@ -74,12 +86,28 @@
             transform: translateY(-50%);
             width: 100.75px;
             height: 140px;
-            background-image: url('images/diver/spritesheets/diver-spritesheet.png');
             background-repeat: no-repeat;
             background-position: 0 0;
             background-size: 604.5px 560px;
             z-index: 0;
             pointer-events: none;
+        }
+
+        /* Spritesheet loaded class - applied after lazy load */
+        #diver-sprite.loaded {
+            /* WebP with PNG fallback */
+            background-image: url('images/diver/spritesheets/diver-spritesheet.webp');
+            background-image: image-set(
+                url('images/diver/spritesheets/diver-spritesheet.webp') type('image/webp'),
+                url('images/diver/spritesheets/diver-spritesheet.png') type('image/png')
+            );
+        }
+
+        /* Fallback for browsers without image-set support */
+        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
+            #diver-sprite.loaded {
+                background-image: url('images/diver/spritesheets/diver-spritesheet.png');
+            }
         }
 
         .container {
@@ -250,21 +278,15 @@
             font-size: 1.5rem;
             font-weight: bold;
             margin: 0 auto 1rem;
+            /* Performance: Reduced from 3 to 2 gradient layers */
             background:
-                /* Very fine grain */
-                repeating-linear-gradient(
-                    0deg,
-                    transparent 0px,
-                    rgba(0,0,0,0.005) 1px,
-                    transparent 2px
-                ),
                 /* Subtle radial highlight */
                 radial-gradient(
                     circle at 40% 40%,
-                    rgba(255,255,255,0.3) 0%,
+                    rgba(255,255,255,0.2) 0%,
                     transparent 70%
                 ),
-                /* Clean base using diver palette */
+                /* Clean base */
                 linear-gradient(
                     135deg,
                     var(--bg-diver-light) 0%,
@@ -324,38 +346,21 @@
             border: 2px solid var(--accent-line);
             padding: 2rem;
             position: relative;
+            /* Performance: Reduced from 5 to 2 gradient layers */
             background:
-                /* Coarser grain for depth */
+                /* Subtle texture */
                 repeating-linear-gradient(
                     45deg,
                     transparent 0px,
-                    rgba(0,0,0,0.012) 1px,
+                    rgba(0,0,0,0.008) 1px,
                     transparent 3px
                 ),
-                repeating-linear-gradient(
-                    -45deg,
-                    transparent 0px,
-                    rgba(0,0,0,0.01) 1px,
-                    transparent 3px
-                ),
-                /* Canvas texture variation using diver palette */
-                radial-gradient(
-                    ellipse at 30% 20%,
-                    rgba(var(--bg-diver-shadow-rgb),0.5) 0%,
-                    transparent 45%
-                ),
-                radial-gradient(
-                    ellipse at 70% 80%,
-                    rgba(var(--bg-diver-shadow-rgb),0.4) 0%,
-                    transparent 40%
-                ),
-                /* Base canvas color using diver palette */
+                /* Base with depth variation */
                 linear-gradient(
                     135deg,
                     var(--bg-diver-base) 0%,
-                    var(--bg-diver-shadow) 30%,
-                    var(--bg-diver-texture-3) 60%,
-                    var(--bg-diver-shadow) 100%
+                    var(--bg-diver-shadow) 50%,
+                    var(--bg-diver-base) 100%
                 );
         }
 
@@ -393,43 +398,21 @@
         .use-case {
             padding: 4rem 0;
             border-top: 2px solid var(--accent-line);
+            /* Performance: Reduced from 5 to 2 gradient layers */
             background:
-                /* Woven texture simulation */
+                /* Subtle texture */
                 repeating-linear-gradient(
-                    0deg,
-                    rgba(0,0,0,0.015) 0px,
+                    45deg,
+                    rgba(0,0,0,0.01) 0px,
                     transparent 1px,
-                    transparent 2px,
-                    rgba(0,0,0,0.012) 3px,
-                    transparent 4px
+                    transparent 3px
                 ),
-                repeating-linear-gradient(
-                    90deg,
-                    rgba(0,0,0,0.012) 0px,
-                    transparent 1px,
-                    transparent 2px,
-                    rgba(0,0,0,0.01) 3px,
-                    transparent 4px
-                ),
-                /* Canvas variation using diver palette */
-                radial-gradient(
-                    ellipse at 25% 35%,
-                    rgba(var(--bg-diver-shadow-rgb),0.6) 0%,
-                    transparent 50%
-                ),
-                radial-gradient(
-                    ellipse at 75% 65%,
-                    rgba(var(--bg-diver-shadow-rgb),0.5) 0%,
-                    transparent 45%
-                ),
-                /* Base canvas color using diver palette */
+                /* Base with variation */
                 linear-gradient(
                     135deg,
                     var(--bg-diver-texture-3) 0%,
-                    var(--bg-diver-shadow) 25%,
-                    var(--bg-diver-base) 50%,
-                    var(--bg-diver-shadow) 75%,
-                    var(--bg-diver-texture-1) 100%
+                    var(--bg-diver-shadow) 50%,
+                    var(--bg-diver-base) 100%
                 );
         }
 
@@ -501,18 +484,12 @@
             color: var(--ink-black);
             font-weight: bold;
             transition: all 0.3s ease;
-            background:
-                repeating-linear-gradient(
-                    45deg,
-                    transparent 0px,
-                    rgba(0,0,0,0.008) 1px,
-                    transparent 2px
-                ),
-                linear-gradient(
-                    135deg,
-                    var(--bg-diver-base) 0%,
-                    var(--bg-diver-texture-3) 100%
-                );
+            /* Performance: Simplified background */
+            background: linear-gradient(
+                135deg,
+                var(--bg-diver-base) 0%,
+                var(--bg-diver-texture-3) 100%
+            );
         }
 
         .github-link:hover {
@@ -767,6 +744,10 @@
     </footer>
 
     <script>
+        // Performance: Store interval IDs for cleanup
+        let rotateInterval = null;
+        let terminalInterval = null;
+
         // Rotating words in hero
         const words = ['Functionality', 'Features', 'Capabilities', 'Patterns', 'Workflows', 'Business Logic'];
         let currentWordIndex = 0;
@@ -783,7 +764,7 @@
         }
 
         rotatingWord.style.transition = 'opacity 0.3s ease';
-        setInterval(rotateWord, 5000);
+        rotateInterval = setInterval(rotateWord, 5000);
 
         // Terminal carousel
         const terminals = document.querySelectorAll('.terminal');
@@ -795,47 +776,78 @@
             terminals[currentTerminal].classList.add('active');
         }
 
-        setInterval(switchTerminal, 8000);
+        terminalInterval = setInterval(switchTerminal, 8000);
+
+        // Performance: Pause animations when page is hidden to save resources
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Clear intervals when page is hidden
+                if (rotateInterval) clearInterval(rotateInterval);
+                if (terminalInterval) clearInterval(terminalInterval);
+            } else {
+                // Resume intervals when page becomes visible
+                rotateInterval = setInterval(rotateWord, 5000);
+                terminalInterval = setInterval(switchTerminal, 8000);
+            }
+        });
 
         // Diver sprite animation based on scroll
         (function() {
             const diverSprite = document.getElementById('diver-sprite');
             let frames = [];
             let ticking = false;
+            let spritesheetLoaded = false;
             const DEBUG = false; // Set to true to enable console logging
 
-            // Fetch and parse spritesheet JSON
-            fetch('images/diver/spritesheets/diver-spritesheet.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Extract frame coordinates and sort by frame number
-                    const frameKeys = Object.keys(data.frames).sort();
-                    frames = frameKeys.map(key => {
-                        const frame = data.frames[key].frame;
-                        return {
-                            x: frame.x,
-                            y: frame.y
-                        };
+            // Performance: Lazy load spritesheet after page loads
+            function loadSpritesheet() {
+                if (spritesheetLoaded) return;
+
+                // Add loaded class to trigger background-image load
+                diverSprite.classList.add('loaded');
+                spritesheetLoaded = true;
+
+                // Fetch and parse spritesheet JSON
+                fetch('images/diver/spritesheets/diver-spritesheet.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Extract frame coordinates and sort by frame number
+                        const frameKeys = Object.keys(data.frames).sort();
+                        frames = frameKeys.map(key => {
+                            const frame = data.frames[key].frame;
+                            return {
+                                x: frame.x,
+                                y: frame.y
+                            };
+                        });
+
+                        if (DEBUG) console.log('Diver spritesheet loaded:', frames.length, 'frames');
+
+                        // Performance: Add passive scroll listener for better scrolling performance
+                        window.addEventListener('scroll', onScroll, { passive: true });
+                        if (DEBUG) console.log('Diver scroll animation initialized');
+
+                        // Initial frame setup - MUST be called AFTER frames are populated
+                        updateDiverFrame();
+                    })
+                    .catch(error => {
+                        console.error('Diver animation unavailable:', error);
+                        // Performance: Hide sprite element on error to avoid broken visuals
+                        diverSprite.style.display = 'none';
                     });
+            }
 
-                    console.log('Diver spritesheet loaded:', frames.length, 'frames');
-
-                    // Add scroll listener
-                    window.addEventListener('scroll', onScroll);
-                    console.log('Diver scroll animation initialized');
-
-                    // Initial frame setup - MUST be called AFTER frames are populated
-                    updateDiverFrame();
-                })
-                .catch(error => {
-                    console.error('CRITICAL: Diver animation failed to initialize:', error);
-                    console.error('Check that images/diver/spritesheets/diver-spritesheet.json exists');
-                });
+            // Load spritesheet after page is fully loaded
+            if (document.readyState === 'complete') {
+                loadSpritesheet();
+            } else {
+                window.addEventListener('load', loadSpritesheet);
+            }
 
             function onScroll() {
                 if (!ticking) {
