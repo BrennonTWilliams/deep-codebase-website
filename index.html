@@ -53,10 +53,10 @@
 
         body::before {
             content: '';
-            position: fixed;
+            position: absolute;
             left: 0;
             top: 0;
-            bottom: 0;
+            height: 100vh;
             width: 403px;
             /* WebP with PNG fallback */
             background-image: url('images/diver/glyph-wall-left.webp');
@@ -75,6 +75,34 @@
         @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
             body::before {
                 background-image: url('images/diver/glyph-wall-left.png');
+            }
+        }
+
+        /* Narrow glyph wall extension - positioned below main wall */
+        body::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 100vh;
+            height: 100vh;
+            width: 403px;
+            /* WebP with PNG fallback */
+            background-image: url('images/diver/glyph-left-wall-narrow.webp');
+            background-image: image-set(
+                url('images/diver/glyph-left-wall-narrow.webp') type('image/webp'),
+                url('images/diver/glyph-left-wall-narrow.png') type('image/png')
+            );
+            background-repeat: repeat-y;
+            background-position: left top;
+            background-size: 403px auto;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Fallback for browsers without image-set support */
+        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
+            body::after {
+                background-image: url('images/diver/glyph-left-wall-narrow.png');
             }
         }
 
@@ -511,8 +539,9 @@
                 display: none;
             }
 
-            /* Also hide wall background on smaller screens */
-            body::before {
+            /* Also hide wall backgrounds on smaller screens */
+            body::before,
+            body::after {
                 display: none;
             }
         }
@@ -802,8 +831,8 @@
             let animationInterval = null;
             let spritesheetLoaded = false;
             const DEBUG = false; // Set to true to enable console logging
-            const FRAME_RATE = 24; // 24 fps for smooth animation
-            const FRAME_DURATION = 1000 / FRAME_RATE; // ~41.67ms per frame
+            const FRAME_RATE = 6; // 6 fps for slow, contemplative animation
+            const FRAME_DURATION = 1000 / FRAME_RATE; // ~167ms per frame
 
             // Performance: Lazy load spritesheet after page loads
             function loadSpritesheet() {
