@@ -83,27 +83,15 @@
             content: '';
             position: absolute;
             left: 0;
-            top: 100vh;
+            top: calc(100vh - 2px);
             height: 100vh;
-            width: 403px;
-            /* WebP with PNG fallback */
-            background-image: url('images/diver/glyph-left-wall-narrow.webp');
-            background-image: image-set(
-                url('images/diver/glyph-left-wall-narrow.webp') type('image/webp'),
-                url('images/diver/glyph-left-wall-narrow.png') type('image/png')
-            );
+            width: 88px;
+            background-image: url('images/diver/glyph-left-wall-narrow-transparent.webp');
             background-repeat: repeat-y;
             background-position: left top;
-            background-size: 403px auto;
+            background-size: 88px auto;
             z-index: -1;
             pointer-events: none;
-        }
-
-        /* Fallback for browsers without image-set support */
-        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
-            body::after {
-                background-image: url('images/diver/glyph-left-wall-narrow.png');
-            }
         }
 
         /* Animated Diver Sprite - lazy loaded via JavaScript */
