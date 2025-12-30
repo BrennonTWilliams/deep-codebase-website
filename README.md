@@ -1,15 +1,15 @@
 # Deep-Codebase Website
 
-A landing page for Deep-Codebase - a tool for extracting functionality from any codebase. Features an animated diver character that responds to scroll position, rotating hero text, and terminal demonstration carousel.
+A landing page for Deep-Codebase - a tool for extracting functionality from any codebase. Features an auto-playing animated diver character, rotating hero text, and terminal demonstration carousel.
 
 ## Features
 
-- **Scroll-Driven Animation**: Diver character animates based on scroll position using sprite sheet
+- **Auto-Playing Animation**: Diver character animates continuously using sprite sheet
 - **Lazy-Loaded Assets**: Spritesheet loads after page load for optimal performance
 - **WebP/PNG Fallback**: Modern image formats with automatic fallback support
 - **Responsive Design**: Mobile-optimized layout with adaptive background elements
 - **Terminal Carousel**: Auto-rotating demonstration examples
-- **Performance Optimized**: Paused animations when page is hidden, passive scroll listeners
+- **Performance Optimized**: Paused animations when page is hidden
 
 ## Project Structure
 
@@ -67,9 +67,8 @@ Open your browser to: `http://localhost:8000`
 ### How It Works
 
 1. **Lazy Loading**: Spritesheet loads after page fully loads to prioritize initial render
-2. **Scroll Mapping**: Scroll position maps to animation frames (24 frames per viewport height)
-3. **Frame Calculation**: `cycleProgress = (scrollY % viewportHeight) / viewportHeight`
-4. **Sprite Positioning**: Background position updates via `requestAnimationFrame` for smooth performance
+2. **Frame Cycling**: Animation cycles through 24 frames continuously at a set interval
+3. **Sprite Positioning**: Background position updates via `requestAnimationFrame` for smooth performance
 
 ### Spritesheet Specifications
 
@@ -96,7 +95,6 @@ Edit the sprite configuration in `index.html`:
 
 ## Performance Features
 
-- **Passive Scroll Listeners**: Improves scroll performance
 - **Visibility API**: Pauses animations when tab is hidden
 - **RequestAnimationFrame**: Smooth sprite updates synced to display refresh
 - **Lazy Asset Loading**: Defers non-critical image loading

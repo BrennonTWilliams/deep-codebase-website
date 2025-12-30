@@ -56,7 +56,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            height: 100vh;
+            bottom: 0;
             width: 403px;
             /* WebP with PNG fallback */
             background-image: url('images/diver/glyph-wall-left.webp');
@@ -84,7 +84,7 @@
             position: absolute;
             left: 0;
             top: calc(100vh - 2px);
-            height: 100vh;
+            bottom: 0;
             width: 88px;
             background-image: url('images/diver/glyph-left-wall-narrow-transparent.webp');
             background-repeat: repeat-y;
@@ -133,78 +133,98 @@
             z-index: 1;
         }
 
-        /* Hero Section */
+        /* Hero Section - Merged with Terminal */
         .hero {
-            padding: 4rem 0 4rem;
+            padding: 2rem 0;
             border-bottom: 2px solid var(--accent-line);
             position: relative;
             overflow: hidden;
         }
 
         .hero .container {
-            padding: 2rem;
-            text-align: center;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 520px;
+            gap: 2rem;
             align-items: center;
         }
 
         .hero-text-container {
-            max-width: 900px;
+            max-width: 100%;
         }
 
         .hero .hero-tagline {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: normal;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             letter-spacing: 0.02em;
             color: var(--glyph-gray);
-            text-align: center;
+            text-align: left;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: normal;
-            margin-bottom: 3rem;
+            margin-bottom: 1.5rem;
             letter-spacing: 0.02em;
             white-space: nowrap;
-            text-align: center;
+            text-align: left;
         }
 
         .hero .rotating-word {
             font-weight: bold;
             border-bottom: 3px solid var(--accent-line);
             display: inline-block;
-            text-align: center;
             white-space: nowrap;
-            width: 420px;
+            width: 350px;
+        }
+
+        .hero-terminal {
+            max-width: 520px;
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .hero .container {
-                padding: 1.5rem;
-                min-height: auto;
+                grid-template-columns: 1fr;
+                text-align: center;
             }
 
-            .hero .hero-tagline {
-                font-size: 1.2rem;
-            }
-
+            .hero .hero-tagline,
             .hero h1 {
-                font-size: 2rem;
-                white-space: normal;
+                text-align: center;
+            }
+
+            .hero-terminal {
+                max-width: 100%;
             }
         }
 
-        /* Terminal Component */
+        @media (max-width: 768px) {
+            .hero .container {
+                padding: 1rem;
+            }
+
+            .hero .hero-tagline {
+                font-size: 1.1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+                white-space: normal;
+            }
+
+            .hero .rotating-word {
+                width: auto;
+            }
+        }
+
+        /* Terminal Component - Compact for Hero */
         .terminal-carousel {
-            margin: 3rem auto;
-            max-width: 800px;
+            margin: 0;
+            max-width: 100%;
             position: relative;
-            height: 400px;
+            height: 280px;
         }
 
         .terminal {
@@ -214,10 +234,10 @@
             width: 100%;
             background: var(--ink-black);
             color: var(--paper-white);
-            padding: 1.5rem;
+            padding: 1rem;
             border: 2px solid var(--accent-line);
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
             opacity: 0;
             transition: opacity 0.5s ease;
@@ -230,13 +250,14 @@
 
         .terminal-header {
             border-bottom: 1px solid var(--paper-white);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+            margin-bottom: 0.6rem;
             font-weight: bold;
+            font-size: 0.8rem;
         }
 
         .terminal-line {
-            margin: 0.5rem 0;
+            margin: 0.3rem 0;
         }
 
         .terminal-prompt {
@@ -245,107 +266,46 @@
 
         .terminal-output {
             color: #888;
-            margin-left: 1rem;
+            margin-left: 0.75rem;
         }
 
-        /* Diagram Section */
+        /* Diagram Section - REMOVED in compact layout */
         .diagram-section {
-            padding: 4rem 0;
-            border-bottom: 2px solid var(--accent-line);
+            display: none;
         }
 
-        .process-diagram {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .diagram-step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-
-        .diagram-step::after {
-            content: '→';
-            position: absolute;
-            right: -2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .diagram-step:last-child::after {
-            content: '';
-        }
-
-        .step-number {
-            width: 60px;
-            height: 60px;
-            border: 3px solid var(--accent-line);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0 auto 1rem;
-            /* Performance: Reduced from 3 to 2 gradient layers */
-            background:
-                /* Subtle radial highlight */
-                radial-gradient(
-                    circle at 40% 40%,
-                    rgba(255,255,255,0.2) 0%,
-                    transparent 70%
-                ),
-                /* Clean base */
-                linear-gradient(
-                    135deg,
-                    var(--bg-diver-light) 0%,
-                    var(--bg-diver-base) 100%
-                );
-        }
-
-        .step-description {
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* Tagline */
-        .tagline {
-            padding: 3rem 0;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: bold;
-            border-bottom: 2px solid var(--accent-line);
-        }
-
-        .tagline-subtext {
-            margin-top: 1.5rem;
-            font-size: 1rem;
-            font-weight: normal;
-            line-height: 1.8;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Features Grid */
+        /* Features Section - With integrated tagline header */
         .features {
-            padding: 4rem 0;
+            padding: 2rem 0 3rem;
+            border-bottom: 2px solid var(--accent-line);
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .features-header h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+        }
+
+        .features-header p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--glyph-gray);
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 1.25rem;
         }
 
-        @media (max-width: 1400px) {
+        @media (max-width: 1200px) {
             .features-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -359,18 +319,15 @@
 
         .feature-card {
             border: 2px solid var(--accent-line);
-            padding: 2rem;
+            padding: 1.25rem;
             position: relative;
-            /* Performance: Reduced from 5 to 2 gradient layers */
             background:
-                /* Subtle texture */
                 repeating-linear-gradient(
                     45deg,
                     transparent 0px,
                     rgba(0,0,0,0.008) 1px,
                     transparent 3px
                 ),
-                /* Base with depth variation */
                 linear-gradient(
                     135deg,
                     var(--bg-diver-base) 0%,
@@ -384,7 +341,7 @@
             position: absolute;
             top: -2px;
             left: -2px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
         }
 
@@ -393,59 +350,65 @@
             position: absolute;
             bottom: -2px;
             right: -2px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
         }
 
         .feature-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
             border-bottom: 1px solid var(--accent-line);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
+        }
+
+        .feature-card img {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 0.75rem;
         }
 
         .feature-card p {
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
-        /* Use Case Section */
-        .use-case {
-            padding: 4rem 0;
+        /* Combined Use Case + Getting Started Section */
+        .action-section {
+            padding: 2rem 0;
             border-top: 2px solid var(--accent-line);
-            /* Performance: Reduced from 5 to 2 gradient layers */
-            background:
-                /* Subtle texture */
-                repeating-linear-gradient(
-                    45deg,
-                    rgba(0,0,0,0.01) 0px,
-                    transparent 1px,
-                    transparent 3px
-                ),
-                /* Base with variation */
-                linear-gradient(
-                    135deg,
-                    var(--bg-diver-texture-3) 0%,
-                    var(--bg-diver-shadow) 50%,
-                    var(--bg-diver-base) 100%
-                );
         }
 
-        .use-case h2 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
+        .action-section .container {
+            display: grid;
+            grid-template-columns: 55fr 45fr;
+            gap: 2rem;
+            align-items: start;
         }
 
-        .use-case-content {
-            max-width: 800px;
-            margin: 0 auto;
+        @media (max-width: 900px) {
+            .action-section .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Use Case Panel */
+        .use-case-panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .use-case-panel .intro {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: var(--glyph-gray);
         }
 
         .use-case-item {
-            margin: 1.5rem 0;
-            padding-left: 2rem;
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
             position: relative;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .use-case-item::before {
@@ -459,47 +422,47 @@
             border-bottom: 1px solid var(--accent-line);
         }
 
-        /* Getting Started */
-        .getting-started {
-            padding: 4rem 0;
-            text-align: center;
-        }
-
-        .getting-started h2 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
+        /* Getting Started Panel */
+        .getting-started-panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
         }
 
         .code-block {
             background: var(--ink-black);
             color: var(--paper-white);
-            padding: 2rem;
-            margin: 2rem auto;
-            max-width: 700px;
+            padding: 1rem;
+            margin: 0 0 1rem 0;
             border: 2px solid var(--accent-line);
             text-align: left;
             font-family: 'Courier New', monospace;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            font-size: 0.85rem;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
         }
 
         .code-line {
-            margin: 0.5rem 0;
+            margin: 0.3rem 0;
         }
 
         .code-comment {
             color: #00ff00;
         }
 
+        .getting-started-panel p {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: var(--glyph-gray);
+        }
+
         .github-link {
             display: inline-block;
-            margin-top: 2rem;
-            padding: 1rem 2rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--accent-line);
             text-decoration: none;
             color: var(--ink-black);
             font-weight: bold;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-            /* Performance: Simplified background */
             background: linear-gradient(
                 135deg,
                 var(--bg-diver-base) 0%,
@@ -512,12 +475,13 @@
             color: var(--paper-white);
         }
 
-        /* Footer */
+        /* Footer - Compact */
         footer {
-            padding: 2rem 0;
+            padding: 1rem 0 0 0;
             text-align: center;
             border-top: 2px solid var(--accent-line);
-            margin-top: 4rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
         }
 
         /* Responsive */
@@ -535,27 +499,11 @@
         }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .process-diagram {
-                flex-direction: column;
-            }
-
-            .diagram-step::after {
-                content: '↓';
-                right: 50%;
-                top: auto;
-                bottom: -2rem;
-                transform: translateX(50%);
-            }
-
-            .diagram-step:last-child::after {
-                content: '';
-            }
-
             .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-section .container {
                 grid-template-columns: 1fr;
             }
         }
@@ -565,77 +513,59 @@
     <!-- Animated Diver Sprite -->
     <div id="diver-sprite"></div>
 
-    <!-- Hero Section -->
+    <!-- Hero Section with Terminal -->
     <section class="hero">
         <div class="container">
             <div class="hero-text-container">
                 <p class="hero-tagline">Dive into any codebase,</p>
                 <h1>Extract <span class="rotating-word" id="rotatingWord">Functionality</span></h1>
             </div>
-        </div>
-    </section>
+            <div class="hero-terminal">
+                <div class="terminal-carousel">
+                    <div class="terminal active" data-terminal="0">
+                        <div class="terminal-header">┌─ deep-codebase ─┐</div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract github.com/OpenHands "task decomposition"
+                        </div>
+                        <div class="terminal-output">Analyzing repository...</div>
+                        <div class="terminal-output">├─ Mapping dependencies</div>
+                        <div class="terminal-output">└─ Extracting components</div>
+                        <div class="terminal-line" style="margin-top: 0.5rem;">
+                            <span class="terminal-output">✓ Complete: task_decomposition_context.md</span>
+                        </div>
+                        <div class="terminal-output">  12 functions | 5 chains | examples included</div>
+                    </div>
 
-    <!-- Terminal Carousel Section -->
-    <section style="padding: 4rem 0; border-bottom: 2px solid var(--accent-line);">
-        <div class="container">
-            <!-- Terminal Carousel -->
-            <div class="terminal-carousel">
-                <div class="terminal active" data-terminal="0">
-                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
-                    <div class="terminal-line">
-                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/All-Hands-AI/OpenHands "task decomposition"
+                    <div class="terminal" data-terminal="1">
+                        <div class="terminal-header">┌─ deep-codebase ─┐</div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract github.com/aider "codebase indexing"
+                        </div>
+                        <div class="terminal-output">Analyzing repository...</div>
+                        <div class="terminal-output">├─ Building call graph</div>
+                        <div class="terminal-output">└─ Extracting indexing system</div>
+                        <div class="terminal-line" style="margin-top: 0.5rem;">
+                            <span class="terminal-output">✓ Complete: codebase_indexing_context.md</span>
+                        </div>
+                        <div class="terminal-output">  18 components | 8 utils | patterns documented</div>
                     </div>
-                    <div class="terminal-output">Analyzing repository...</div>
-                    <div class="terminal-output">├─ Identifying relevant modules</div>
-                    <div class="terminal-output">├─ Mapping dependencies</div>
-                    <div class="terminal-output">├─ Extracting task decomposition components</div>
-                    <div class="terminal-output">└─ Generating context file</div>
-                    <div class="terminal-line" style="margin-top: 1rem;">
-                        <span class="terminal-output">✓ Extraction complete: task_decomposition_context.md</span>
-                    </div>
-                    <div class="terminal-output">  - 12 relevant functions identified</div>
-                    <div class="terminal-output">  - 5 dependency chains mapped</div>
-                    <div class="terminal-output">  - Integration examples included</div>
-                </div>
 
-                <div class="terminal" data-terminal="1">
-                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
-                    <div class="terminal-line">
-                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/Aider-AI/aider "codebase indexing"
+                    <div class="terminal" data-terminal="2">
+                        <div class="terminal-header">┌─ deep-codebase ─┐</div>
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> deep-codebase extract github.com/lovable "agent orchestration"
+                        </div>
+                        <div class="terminal-output">Analyzing repository...</div>
+                        <div class="terminal-output">├─ Tracing orchestration flow</div>
+                        <div class="terminal-output">└─ Compiling extraction package</div>
+                        <div class="terminal-line" style="margin-top: 0.5rem;">
+                            <span class="terminal-output">✓ Complete: agent_orchestration_context.md</span>
+                        </div>
+                        <div class="terminal-output">  15 patterns | 10 schemas | hooks documented</div>
                     </div>
-                    <div class="terminal-output">Analyzing repository...</div>
-                    <div class="terminal-output">├─ Scanning source tree</div>
-                    <div class="terminal-output">├─ Building call graph</div>
-                    <div class="terminal-output">├─ Extracting indexing system</div>
-                    <div class="terminal-output">└─ Preparing integration guide</div>
-                    <div class="terminal-line" style="margin-top: 1rem;">
-                        <span class="terminal-output">✓ Extraction complete: codebase_indexing_context.md</span>
-                    </div>
-                    <div class="terminal-output">  - 18 core components extracted</div>
-                    <div class="terminal-output">  - 8 utility functions included</div>
-                    <div class="terminal-output">  - Usage patterns documented</div>
-                </div>
-
-                <div class="terminal" data-terminal="2">
-                    <div class="terminal-header">┌─ deep-codebase extraction ─┐</div>
-                    <div class="terminal-line">
-                        <span class="terminal-prompt">$</span> deep-codebase extract https://github.com/firecrawl/open-lovable "agent orchestration"
-                    </div>
-                    <div class="terminal-output">Analyzing repository...</div>
-                    <div class="terminal-output">├─ Parsing agent architecture</div>
-                    <div class="terminal-output">├─ Tracing orchestration flow</div>
-                    <div class="terminal-output">├─ Mapping inter-agent communication</div>
-                    <div class="terminal-output">└─ Compiling extraction package</div>
-                    <div class="terminal-line" style="margin-top: 1rem;">
-                        <span class="terminal-output">✓ Extraction complete: agent_orchestration_context.md</span>
-                    </div>
-                    <div class="terminal-output">  - 15 orchestration patterns found</div>
-                    <div class="terminal-output">  - 10 message schemas extracted</div>
-                    <div class="terminal-output">  - Integration hooks documented</div>
                 </div>
             </div>
         </div>
-    </section>
     </section>
 
     <!-- Process Diagram -->
@@ -664,95 +594,63 @@
         </div>
     </section>
 
-    <!-- Tagline -->
-    <section class="tagline">
-        <div class="container">
-            <div>Deep-codebase finds, extracts, and prepares components for integration—automatically</div>
-            <div class="tagline-subtext">
-                Point deep-codebase at any repository with your target feature ("authentication system", "data pipeline", "rate limiter")
-                and get extraction-ready code with full dependency chains, usage examples, and integration guidance - all in a single file,
-                optimized for LLM coding agents (and humans, too)
-            </div>
-        </div>
-    </section>
-
-    <!-- Features -->
+    <!-- Features with Integrated Header -->
     <section class="features">
         <div class="container">
+            <div class="features-header">
+                <h2>Find, extract, and prepare components for integration—automatically</h2>
+                <p>Point at any repository with your target feature and get extraction-ready code with full dependency chains, usage examples, and integration guidance—optimized for LLM coding agents</p>
+            </div>
             <div class="features-grid">
                 <div class="feature-card">
-                    <img src="images/target-select.svg" alt="Intelligent Code Selection" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--bp-bright-blue);">
+                    <img src="images/target-select.svg" alt="Intelligent Code Selection">
                     <h3>Intelligent Code Selection</h3>
-                    <p>
-                        Advanced semantic analysis extracts only query-relevant code segments, cutting token waste by up to 90% through intelligent context filtering.
-                    </p>
+                    <p>Semantic analysis extracts only query-relevant code, cutting token waste by up to 90%.</p>
                 </div>
 
                 <div class="feature-card">
-                    <img src="images/network-tree.svg" alt="Full Dependency Mapping" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--bp-bright-blue);">
+                    <img src="images/network-tree.svg" alt="Full Dependency Mapping">
                     <h3>Full Dependency Mapping</h3>
-                    <p>
-                        Automatically resolves imports, function calls, and type dependencies to ensure complete context during code extraction—no missing pieces.
-                    </p>
+                    <p>Automatically resolves imports, function calls, and type dependencies—no missing pieces.</p>
                 </div>
 
                 <div class="feature-card">
-                    <img src="images/code-layers.svg" alt="Polyglot Code Intelligence" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--bp-bright-blue);">
-                    <h3>Polyglot Code Intelligence</h3>
-                    <p>
-                        Millisecond-fast incremental parsing delivers real-time syntax trees for instant code understanding across languages.
-                    </p>
+                    <img src="images/code-layers.svg" alt="Polyglot Code Intelligence">
+                    <h3>Polyglot Intelligence</h3>
+                    <p>Millisecond-fast parsing delivers real-time syntax trees across all major languages.</p>
                 </div>
 
                 <div class="feature-card">
-                    <img src="images/package-box.svg" alt="Integration-Ready Output" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--bp-bright-blue);">
+                    <img src="images/package-box.svg" alt="Integration-Ready Output">
                     <h3>Integration-Ready Output</h3>
-                    <p>
-                        Structured JSON/XML output enables seamless integration with CI/CD pipelines, IDEs, and LLM workflows for automated quality gates and toolchain compatibility.
-                    </p>
+                    <p>Structured output integrates seamlessly with CI/CD, IDEs, and LLM workflows.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Use Cases -->
-    <section class="use-case" style="background: none;">
+    <!-- Combined Action Section -->
+    <section class="action-section">
         <div class="container">
-            <h2>Built for Real Extraction Workflows</h2>
-            <div class="use-case-content">
-                <p style="text-align: center; margin-bottom: 2rem;">
-                    Created by developers tired of manually reverse-engineering components from open-source projects.
-                    Battle-tested on production codebases.
-                </p>
-
+            <div class="use-case-panel">
+                <h2>Built for Real Extraction Workflows</h2>
+                <p class="intro">Created by developers tired of reverse-engineering components. Battle-tested on production codebases.</p>
                 <div class="use-case-item">
-                    <strong>Primary use case</strong>: Extract working implementations (authentication systems, data pipelines,
-                    UI components, rate limiters) from any codebase for integration into your project.
+                    <strong>Primary</strong>: Extract working implementations (auth systems, data pipelines, UI components) from any codebase.
                 </div>
-
                 <div class="use-case-item">
-                    <strong>Secondary benefits</strong>: Evaluate libraries before adoption, audit dependencies, learn from
-                    reference implementations.
+                    <strong>Secondary</strong>: Evaluate libraries before adoption, audit dependencies, learn from reference implementations.
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Getting Started -->
-    <section class="getting-started">
-        <div class="container">
-            <h2>Get started with one command</h2>
-
-            <div class="code-block">
-                <div class="code-line">pip install deep-codebase</div>
-                <div class="code-line">deep-codebase extract &lt;repository-url&gt; "recommendation algorithm"</div>
+            <div class="getting-started-panel">
+                <h2>Get Started</h2>
+                <div class="code-block">
+                    <div class="code-line">pip install deep-codebase</div>
+                    <div class="code-line">deep-codebase extract &lt;repo-url&gt; "feature"</div>
+                </div>
+                <p>Full docs, examples, and installation guides on GitHub.</p>
+                <a href="https://github.com/yourusername/deep-codebase" class="github-link">→ View on GitHub</a>
             </div>
-
-            <p>Visit our GitHub repository for installation, examples, and full documentation.</p>
-
-            <a href="https://github.com/yourusername/deep-codebase" class="github-link">
-                → View on GitHub
-            </a>
         </div>
     </section>
 
