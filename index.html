@@ -58,24 +58,12 @@
             top: 0;
             bottom: 0;
             width: 403px;
-            /* WebP with PNG fallback */
             background-image: url('images/diver/glyph-wall-left.webp');
-            background-image: image-set(
-                url('images/diver/glyph-wall-left.webp') type('image/webp'),
-                url('images/diver/glyph-wall-left.png') type('image/png')
-            );
             background-repeat: no-repeat;
             background-position: left top;
             background-size: 403px 100vh;
             z-index: -1;
             pointer-events: none;
-        }
-
-        /* Fallback for browsers without image-set support */
-        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
-            body::before {
-                background-image: url('images/diver/glyph-wall-left.png');
-            }
         }
 
         /* Narrow glyph wall extension - positioned below main wall */
@@ -110,19 +98,7 @@
 
         /* Spritesheet loaded class - applied after lazy load */
         #diver-sprite.loaded {
-            /* WebP with PNG fallback */
             background-image: url('images/diver/spritesheets/diver-spritesheet.webp');
-            background-image: image-set(
-                url('images/diver/spritesheets/diver-spritesheet.webp') type('image/webp'),
-                url('images/diver/spritesheets/diver-spritesheet.png') type('image/png')
-            );
-        }
-
-        /* Fallback for browsers without image-set support */
-        @supports not (background-image: image-set(url('test.webp') type('image/webp'))) {
-            #diver-sprite.loaded {
-                background-image: url('images/diver/spritesheets/diver-spritesheet.png');
-            }
         }
 
         .container {
