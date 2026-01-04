@@ -1,5 +1,17 @@
+# OS files
 .DS_Store
-images/astonaut-miners/
-#images/
+*.DS_Store
 
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# IDE/Editor
+.claude/
+.vscode/
+.idea/
+
+# Project specific
+images/astonaut-miners/
 .playwright-mcp/

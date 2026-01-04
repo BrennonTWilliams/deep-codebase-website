@@ -164,7 +164,7 @@ terminalInterval = setInterval(switchTerminal, 8000);
 
 ## License
 
-[Add your license information]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
