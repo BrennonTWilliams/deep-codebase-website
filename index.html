@@ -177,10 +177,62 @@
         }
 
         /* Responsive adjustments */
+
+        /* Large intermediate: transition from full-width to offset layout */
+        @media (max-width: 1399px) and (min-width: 1200px) {
+            .hero .container {
+                padding-left: calc(340px - (100vw - 1200px) / 2);
+                max-width: 100%;
+                margin-left: 0;
+                margin-right: 2rem;
+            }
+        }
+
+        /* Intermediate: compressed layout with diver still visible */
+        @media (max-width: 1199px) and (min-width: 1025px) {
+            .hero .container {
+                grid-template-columns: 1fr minmax(360px, 450px);
+                gap: 1.5rem;
+                padding-left: clamp(280px, 28vw, 340px);
+                padding-right: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.25rem;
+                white-space: normal;
+            }
+
+            .hero .rotating-word {
+                width: auto;
+                min-width: 280px;
+            }
+
+            .hero .hero-tagline {
+                font-size: 1.5rem;
+            }
+
+            .hero-terminal {
+                max-width: 450px;
+            }
+
+            #diver-sprite {
+                left: 180px;
+                transform: scale(0.85);
+                transform-origin: left top;
+            }
+
+            body::before {
+                width: 320px;
+            }
+        }
+
+        /* Tablet: hide diver, centered layout */
         @media (max-width: 1024px) {
             .hero .container {
                 grid-template-columns: 1fr;
                 text-align: center;
+                padding-left: 2rem;
+                padding-right: 2rem;
             }
 
             .hero .hero-tagline,
