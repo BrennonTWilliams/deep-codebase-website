@@ -15,3 +15,8 @@ __pycache__/
 # Project specific
 images/astonaut-miners/
 .playwright-mcp/
+
+# Large image files (prevent re-adding)
+images/diver/*-6x.png
+images/diver/Archive/
+*-gigapixel-*
