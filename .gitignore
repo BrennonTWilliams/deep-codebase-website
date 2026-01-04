@@ -1,10 +1,10 @@
 # OS files
 .DS_Store
-*.DS_Store
+**/.DS_Store
 
 # Python
 venv/
-__pycache__/
+**/__pycache__/
 *.pyc
 
 # IDE/Editor
