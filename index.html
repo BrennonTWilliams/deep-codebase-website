@@ -104,7 +104,8 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
+            /* Fluid padding: scales smoothly between 1rem and 2rem */
+            padding: 0 clamp(1rem, 3vw, 2rem);
             position: relative;
             z-index: 1;
         }
@@ -134,7 +135,8 @@
         }
 
         .hero .hero-tagline {
-            font-size: 1.75rem;
+            /* Fluid typography: scales smoothly between 1.2rem and 1.75rem */
+            font-size: clamp(1.2rem, 2.5vw + 0.5rem, 1.75rem);
             font-weight: 500;
             margin-bottom: 0.75rem;
             letter-spacing: 0.06em;
@@ -145,7 +147,8 @@
         }
 
         .hero h1 {
-            font-size: 2.75rem;
+            /* Fluid typography: scales smoothly between 1.5rem and 2.75rem */
+            font-size: clamp(1.5rem, 4vw + 0.5rem, 2.75rem);
             font-weight: 700;
             margin-bottom: 1.25rem;
             letter-spacing: -0.02em;
@@ -160,7 +163,8 @@
             border-bottom: 3px solid var(--accent-line);
             display: inline-block;
             white-space: nowrap;
-            width: 350px;
+            /* Fluid width: scales with viewport, constrained to reasonable bounds */
+            width: clamp(280px, 25vw + 100px, 350px);
             padding-bottom: 0.15rem;
             position: relative;
             transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -212,12 +216,7 @@
                 padding: 1rem;
             }
 
-            .hero .hero-tagline {
-                font-size: 1.4rem;
-            }
-
             .hero h1 {
-                font-size: 1.8rem;
                 white-space: normal;
             }
 
@@ -226,12 +225,28 @@
             }
         }
 
+        /* Small phones: additional optimizations */
+        @media (max-width: 480px) {
+            .hero .container {
+                padding: 0.75rem;
+            }
+
+            .hero .rotating-word {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .hero-text-container {
+                min-height: auto;
+            }
+        }
+
         /* Terminal Component - Compact for Hero */
         .terminal-carousel {
             margin: 0;
             max-width: 100%;
             position: relative;
-            height: 280px;
+            height: clamp(200px, 35vh, 350px);
             filter: drop-shadow(6px 6px 12px rgba(0,0,0,0.08));
         }
 
@@ -302,7 +317,8 @@
         }
 
         .features-header h2 {
-            font-size: 1.4rem;
+            /* Fluid typography: scales smoothly between 1.1rem and 1.4rem */
+            font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.4rem);
             font-weight: bold;
             margin-bottom: 0.75rem;
         }
@@ -317,18 +333,27 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            /* Auto-fit with minmax for fluid responsive behavior */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: clamp(1rem, 2vw, 1.5rem);
         }
 
-        @media (max-width: 1200px) {
+        /* Force 4 columns on large screens for visual consistency */
+        @media (min-width: 1100px) {
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Align with action section - both stack at similar breakpoints */
+        @media (max-width: 1000px) {
             .features-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1.25rem;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .features-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -653,16 +678,6 @@
             body::before,
             body::after {
                 display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .action-section .container {
-                grid-template-columns: 1fr;
             }
         }
 
