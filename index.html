@@ -135,48 +135,65 @@
 
         /* Hero Section - Merged with Terminal */
         .hero {
-            padding: 2rem 0;
+            padding: 3rem 0 2.5rem;
             border-bottom: 2px solid var(--accent-line);
             position: relative;
             overflow: hidden;
         }
 
         .hero .container {
-            padding: 1.5rem 2rem;
+            padding: 2rem 2.5rem;
             display: grid;
             grid-template-columns: 1fr 520px;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
         }
 
         .hero-text-container {
             max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 240px;
         }
 
         .hero .hero-tagline {
-            font-size: 1.3rem;
-            font-weight: normal;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.02em;
+            font-size: 1.75rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.06em;
+            line-height: 1.4;
             color: var(--glyph-gray);
             text-align: left;
+            opacity: 0.85;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
-            font-weight: normal;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.02em;
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
             white-space: nowrap;
             text-align: left;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.04);
         }
 
         .hero .rotating-word {
-            font-weight: bold;
+            font-weight: 700;
             border-bottom: 3px solid var(--accent-line);
             display: inline-block;
             white-space: nowrap;
             width: 350px;
+            padding-bottom: 0.15rem;
+            position: relative;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero .rotating-word.fading {
+            opacity: 0;
+            transform: translateY(-4px);
         }
 
         .hero-terminal {
@@ -206,7 +223,7 @@
             }
 
             .hero .hero-tagline {
-                font-size: 1.1rem;
+                font-size: 1.4rem;
             }
 
             .hero h1 {
@@ -225,6 +242,7 @@
             max-width: 100%;
             position: relative;
             height: 280px;
+            filter: drop-shadow(6px 6px 12px rgba(0,0,0,0.08));
         }
 
         .terminal {
@@ -232,28 +250,36 @@
             top: 0;
             left: 0;
             width: 100%;
-            background: var(--ink-black);
+            background: linear-gradient(180deg, #1e1e1e 0%, var(--ink-black) 100%);
             color: var(--paper-white);
-            padding: 1rem;
+            padding: 1.25rem;
             border: 2px solid var(--accent-line);
             font-family: 'Courier New', monospace;
             font-size: 0.85rem;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            box-shadow:
+                4px 4px 0 rgba(0,0,0,0.12),
+                inset 0 1px 0 rgba(255,255,255,0.04);
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transform: scale(0.98) translateX(8px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: opacity, transform;
         }
 
         .terminal.active {
             opacity: 1;
+            transform: scale(1) translateX(0);
             z-index: 1;
         }
 
         .terminal-header {
-            border-bottom: 1px solid var(--paper-white);
-            padding-bottom: 0.4rem;
-            margin-bottom: 0.6rem;
-            font-weight: bold;
-            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            font-size: 0.825rem;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
         }
 
         .terminal-line {
@@ -302,74 +328,216 @@
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.25rem;
+            gap: 1.5rem;
         }
 
         @media (max-width: 1200px) {
             .features-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
             }
         }
 
         @media (max-width: 768px) {
             .features-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+                max-width: 420px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Card entrance animation */
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
         .feature-card {
+            /* Beveled border effect */
             border: 2px solid var(--accent-line);
-            padding: 1.25rem;
+            border-top-color: rgba(42, 38, 32, 0.7);
+            border-left-color: rgba(42, 38, 32, 0.7);
+            border-bottom-color: rgba(42, 38, 32, 1);
+            border-right-color: rgba(42, 38, 32, 1);
+
+            /* Refined padding */
+            padding: 1.5rem 1.375rem 1.375rem;
+            min-height: 190px;
             position: relative;
+
+            /* Layout */
+            display: flex;
+            flex-direction: column;
+
+            /* Enhanced paper texture */
             background:
                 repeating-linear-gradient(
                     45deg,
                     transparent 0px,
-                    rgba(0,0,0,0.008) 1px,
-                    transparent 3px
+                    rgba(0,0,0,0.004) 1px,
+                    transparent 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    rgba(0,0,0,0.003) 1px,
+                    transparent 2px
+                ),
+                radial-gradient(
+                    ellipse at 25% 15%,
+                    var(--bg-diver-light) 0%,
+                    transparent 45%
                 ),
                 linear-gradient(
-                    135deg,
+                    145deg,
                     var(--bg-diver-base) 0%,
-                    var(--bg-diver-shadow) 50%,
+                    var(--bg-diver-shadow) 45%,
                     var(--bg-diver-base) 100%
                 );
+
+            /* Subtle shadow */
+            box-shadow:
+                1px 1px 0 rgba(42, 38, 32, 0.12),
+                2px 2px 6px rgba(0, 0, 0, 0.04);
+
+            /* Smooth transitions */
+            transition:
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.2s ease;
+
+            /* Entrance animation */
+            animation: cardFadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.05s; }
+        .feature-card:nth-child(2) { animation-delay: 0.1s; }
+        .feature-card:nth-child(3) { animation-delay: 0.15s; }
+        .feature-card:nth-child(4) { animation-delay: 0.2s; }
+
+        /* Hover state */
+        .feature-card:hover {
+            transform: translateY(-4px) translateX(-1px);
+            box-shadow:
+                2px 2px 0 rgba(42, 38, 32, 0.18),
+                4px 4px 10px rgba(0, 0, 0, 0.07),
+                6px 6px 20px rgba(0, 0, 0, 0.03);
+            border-color: rgba(42, 38, 32, 0.85);
+        }
+
+        /* Focus state for accessibility */
+        .feature-card:focus-within {
+            outline: none;
+            box-shadow:
+                0 0 0 2px var(--bg-diver-base),
+                0 0 0 4px var(--ink-black),
+                2px 2px 0 rgba(42, 38, 32, 0.12);
+        }
+
+        .feature-card::before,
+        .feature-card::after {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--accent-line);
+            opacity: 0.65;
+            user-select: none;
+            pointer-events: none;
+            transition:
+                opacity 0.2s ease,
+                color 0.2s ease,
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .feature-card::before {
             content: '┌';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            font-size: 1.2rem;
-            font-weight: bold;
+            top: -3px;
+            left: -3px;
         }
 
         .feature-card::after {
             content: '┘';
             position: absolute;
-            bottom: -2px;
-            right: -2px;
-            font-size: 1.2rem;
-            font-weight: bold;
+            bottom: -3px;
+            right: -3px;
+        }
+
+        .feature-card:hover::before,
+        .feature-card:hover::after {
+            opacity: 1;
+            color: var(--ink-black);
+        }
+
+        .feature-card:hover::before {
+            transform: translate(-2px, -2px);
+        }
+
+        .feature-card:hover::after {
+            transform: translate(2px, 2px);
         }
 
         .feature-card h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid var(--accent-line);
-            padding-bottom: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 0.625rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed rgba(42, 38, 32, 0.5);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
         .feature-card img {
-            width: 36px;
-            height: 36px;
-            margin-bottom: 0.75rem;
+            width: 32px;
+            height: 32px;
+            margin-bottom: 1rem;
+            filter: brightness(0.15);
+            opacity: 0.8;
+            transition:
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                filter 0.2s ease;
+        }
+
+        .feature-card:hover img {
+            opacity: 1;
+            filter: brightness(0);
+            transform: scale(1.08);
         }
 
         .feature-card p {
-            font-size: 0.85rem;
-            line-height: 1.5;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            color: var(--glyph-gray);
+            margin-top: auto;
+        }
+
+        .feature-card p::first-letter {
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                padding: 1.25rem;
+                min-height: auto;
+            }
+
+            .feature-card h3 {
+                font-size: 0.85rem;
+            }
+
+            .feature-card p {
+                font-size: 0.8rem;
+            }
         }
 
         /* Combined Use Case + Getting Started Section */
@@ -505,6 +673,30 @@
 
             .action-section .container {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .feature-card,
+            .terminal,
+            .hero .rotating-word {
+                animation: none;
+                opacity: 1;
+                transition-duration: 0.01ms;
+            }
+
+            .feature-card img {
+                transition-duration: 0.01ms;
+            }
+
+            .feature-card::before,
+            .feature-card::after {
+                transition-duration: 0.01ms;
+            }
+
+            .hero .rotating-word.fading {
+                transform: none;
             }
         }
     </style>
@@ -673,15 +865,14 @@
 
         function rotateWord() {
             currentWordIndex = (currentWordIndex + 1) % words.length;
-            rotatingWord.style.opacity = '0';
+            rotatingWord.classList.add('fading');
 
             setTimeout(() => {
                 rotatingWord.textContent = words[currentWordIndex];
-                rotatingWord.style.opacity = '1';
-            }, 300);
+                rotatingWord.classList.remove('fading');
+            }, 350);
         }
 
-        rotatingWord.style.transition = 'opacity 0.3s ease';
         rotateInterval = setInterval(rotateWord, 5000);
 
         // Terminal carousel
